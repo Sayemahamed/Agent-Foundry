@@ -33,10 +33,6 @@ Agent-Foundry/
 │   ├── multi_agent_demo.py  # Example of multiple agents collaborating
 │   └── custom_tools.py      # Tools to extend agent functionality
 │
-├── examples/
-│   ├── basic_agent_demo.ipynb   # Notebook demonstrating a basic agent
-│   └── multi_agent_demo.ipynb   # Notebook showcasing multi-agent interactions
-│
 ├── README.md                # Project documentation
 ├── requirements.txt         # Python dependencies
 └── .gitignore               # Files to ignore in Git
