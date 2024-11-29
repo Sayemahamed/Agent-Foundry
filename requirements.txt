@@ -1,3 +1,13 @@
-langgraph
-python-dotenv
 ipykernel
+langgraph
+langgraph-sdk
+langgraph-checkpoint-sqlite
+langsmith
+langchain-community
+langchain-core
+tavily-python
+wikipedia
+trustcall
+langgraph-cli
+langchain-groq
+langchain-ollama
