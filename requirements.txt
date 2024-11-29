@@ -12,3 +12,4 @@ trustcall
 langgraph-cli
 langchain-groq
 langchain-ollama
+IPython
