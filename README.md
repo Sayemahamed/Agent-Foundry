@@ -1,14 +1,14 @@
 # Agent-Foundry
 
-Welcome to **Agent-Foundry**, a repository dedicated to building and experimenting with multiple simple LLM-based agents using [LangChain](https://www.langchain.com). This project is a hands-on journey into understanding and creating AI agents while exploring the versatility of LangChain.
+Welcome to **Agent-Foundry**, a repository dedicated to building and experimenting with multiple simple LLM-based agents using [LangGraph](https://github.com/langchain-ai/langgraph). This project is a hands-on journey into understanding and creating AI agents while exploring the powerful capabilities of LangGraph for building complex agent workflows.
 
 ---
 
 ## 🚀 Project Goals
 
-- Build and experiment with various LLM agents.
-- Learn the foundational concepts of AI agents.
-- Explore different use cases and functionalities enabled by LangChain.
+- Build and experiment with various LLM agents using modern agent frameworks.
+- Learn the foundational concepts of AI agents and agent workflows.
+- Explore different use cases and functionalities enabled by LangGraph.
 - Develop a modular and reusable framework for AI agent experimentation.
 
 ---
@@ -16,9 +16,9 @@ Welcome to **Agent-Foundry**, a repository dedicated to building and experimenti
 ## 🛠 Features
 
 1. **Simple LLM Agents**: Start with basic agents to understand their core logic.
-2. **Multi-Agent Systems**: Experiment with interactions between multiple agents.
+2. **Multi-Agent Systems**: Experiment with complex agent workflows and interactions.
 3. **Custom Tool Integrations**: Add tools like calculators, web search, or APIs to enhance agent capabilities.
-4. **Agent Behavior Customization**: Explore different agent types, such as conversational, action-oriented, or retrieval-augmented agents.
+4. **Agent Behavior Customization**: Explore different agent types and workflow patterns.
 
 ---
 
@@ -90,4 +90,3 @@ This project is licensed under the [MIT License](LICENSE).
 For questions or discussions, feel free to reach out via:  
 - **Email**: [sayemahamed183@gmail.com](mailto:sayemahamed183@gmail.com)  
 - **GitHub**: [Agent-Foundry](https://github.com/Sayemahamed/Agent-Foundry)
-
