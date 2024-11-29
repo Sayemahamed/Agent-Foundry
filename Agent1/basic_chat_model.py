@@ -18,4 +18,4 @@ class Agent:
 
 
 agent = Agent()
-agent.respond("What is the capital of France?").to_json()["kwargs"]
+agent.respond("What is the capital of France?").to_json()
