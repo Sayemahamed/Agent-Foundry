@@ -1,3 +1,6 @@
 langchain
+langchain_community
 python-dotenv
 langchain-ollama
+langchain-groq
+ipykernel

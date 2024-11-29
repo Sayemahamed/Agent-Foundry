@@ -61,6 +61,18 @@ Basic LLM Agents Project Ideas
     - Source verification
     - Use case: Academic research
 
+11. Smart Study Assistant
+    - Document processing
+    - Interactive learning
+    - Memory and progress tracking
+    - Use case: Personalized learning
+
+12. Code Review Assistant
+    - Code analysis
+    - Documentation helper
+    - Interactive improvements
+    - Use case: Code quality improvement
+
 Each agent can be built using LangChain and can include:
 - Basic memory system
 - Simple tool integrations
