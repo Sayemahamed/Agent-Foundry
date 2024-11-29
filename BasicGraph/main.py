@@ -1,6 +1,7 @@
 from typing import TypedDict, Literal
 import random
 from IPython.display import display, Image
+from langgraph.graph import START, END, StateGraph
 
 
 class State(TypedDict):
@@ -27,3 +28,22 @@ def decider(state: State) -> Literal["Node2", "Node3"]:
     user_input = state["graph_state"]
 
     return random.choice(["Node2", "Node3"])
+
+
+builder = StateGraph(State)
+
+builder.add_node("Node1", Node1)
+builder.add_node("Node2", Node2)
+builder.add_node("Node3", Node3)
+
+builder.add_edge(START, "Node1")
+builder.add_conditional_edges("Node1", decider)
+builder.add_edge("Node2", END)
+builder.add_edge("Node3", END)
+
+graph = builder.compile()
+
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+
+graph.invoke({"graph_state": "Hello, I am Sayem."})

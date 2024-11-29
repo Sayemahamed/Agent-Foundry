@@ -13,3 +13,4 @@ langgraph-cli
 langchain-groq
 langchain-ollama
 IPython
+black[jupyter]
