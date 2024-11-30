@@ -77,5 +77,5 @@ print("-" * 100)
 for call in tool_calls:
     tool_name = call["name"]
     tool_args = call["args"]
-    result = tools[tool_name].invoke(**tool_args)  # Correctly unpack arguments
+    result = tools[tool_name].invoke(tool_args)  # Correctly unpack arguments
     print(f"Tool: {tool_name}, Result: {result}")
