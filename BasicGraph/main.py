@@ -6,21 +6,22 @@ from langgraph.graph import START, END, StateGraph
 
 class State(TypedDict):
     graph_state: str
+    name: str
 
 
 def Node1(state: State) -> State:
     print("---Node 1---")
-    return {"graph_state": state["graph_state"] + " I am"}
+    return {"graph_state": state["graph_state"] + " I am", "name": state["name"]}
 
 
 def Node2(state: State) -> State:
     print("---Node 2---")
-    return {"graph_state": state["graph_state"] + " Happy."}
+    return {"graph_state": state["graph_state"] + " Happy.", "name": state["name"]}
 
 
 def Node3(state: State) -> State:
     print("---Node 3---")
-    return {"graph_state": state["graph_state"] + " Sad."}
+    return {"graph_state": state["graph_state"] + " Sad.", "name": state["name"]}
 
 
 def decider(state: State) -> Literal["Node2", "Node3"]:
@@ -46,4 +47,4 @@ graph = builder.compile()
 display(Image(graph.get_graph().draw_mermaid_png()))
 
 
-graph.invoke({"graph_state": "Hello, I am Sayem."})
+graph.invoke({"graph_state": "Hello, I am Sayem.", "name": "Sayem"})

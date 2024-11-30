@@ -1,5 +1,5 @@
 from langchain_ollama import ChatOllama
-from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AnyMessage
 from langchain_core.tools import tool
 import math
 
@@ -7,7 +7,7 @@ import math
 agent = ChatOllama(model="hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF", temperature=0.7)
 
 # System message defining the agent's role
-messages: list[BaseMessage] = [
+messages: list[AnyMessage] = [
     SystemMessage(
         content="""
         You are Qwen, a math problem solver. You will be given a math problem and your task is to solve it using the tools provided.
@@ -36,37 +36,44 @@ def add(a: float, b: float) -> float:
     """Add two numbers"""
     return a + b
 
+
 @tool
 def subtract(a: float, b: float) -> float:
     """Subtract two numbers"""
     return a - b
+
 
 @tool
 def multiply(a: float, b: float) -> float:
     """Multiply two numbers"""
     return a * b
 
+
 @tool
 def divide(a: float, b: float) -> float:
     """Divide two numbers"""
     return a / b if b != 0 else float("inf")
 
+
 @tool
 def power(base: float, exponent: float) -> float:
     """Calculate base raised to exponent"""
-    return base ** exponent
+    return base**exponent
+
 
 @tool
 def sqrt(x: float) -> float:
     """Calculate square root"""
     if x < 0:
-        return float('nan')
+        return float("nan")
     return math.sqrt(x)
+
 
 @tool
 def abs(x: float) -> float:
     """Calculate absolute value"""
-    return abs(x)
+    return math.fabs(x)
+
 
 @tool
 def factorial(n: int) -> int:
@@ -75,51 +82,69 @@ def factorial(n: int) -> int:
         raise ValueError("Factorial requires non-negative integer")
     return math.factorial(n)
 
+
 @tool
 def mod(a: float, b: float) -> float:
     """Calculate remainder"""
     if b == 0:
-        return float('nan')
+        return float("nan")
     return a % b
+
 
 @tool
 def sin(x: float) -> float:
     """Calculate sine (x in radians)"""
     return math.sin(x)
 
+
 @tool
 def cos(x: float) -> float:
     """Calculate cosine (x in radians)"""
     return math.cos(x)
+
 
 @tool
 def tan(x: float) -> float:
     """Calculate tangent (x in radians)"""
     return math.tan(x)
 
+
 # Create list of all tools
-all_tools = [add, subtract, multiply, divide, power, sqrt, abs, factorial, mod, sin, cos, tan]
+all_tools = [
+    add,
+    subtract,
+    multiply,
+    divide,
+    power,
+    sqrt,
+    abs,
+    factorial,
+    mod,
+    sin,
+    cos,
+    tan,
+]
 
 # Add tools to a dictionary for reference
-tools = {
-    tool.name: tool for tool in all_tools
-}
+tools = {tool.name: tool for tool in all_tools}
 
 # Append math questions
-messages.extend([
-    HumanMessage(content="What is 2+2?", name="Sayem"),
-    HumanMessage(content="What is 2-2?", name="Sayem"),
-    HumanMessage(content="What is 2*2?", name="Sayem"),
-    HumanMessage(content="What is 2/2?", name="Sayem"),
-    HumanMessage(content="What is 2^3?", name="Sayem"),
-    HumanMessage(content="What is √16?", name="Sayem"),
-    HumanMessage(content="What is |−5|?", name="Sayem"),
-    HumanMessage(content="What is 5!?", name="Sayem"),
-    HumanMessage(content="What is 17 mod 5?", name="Sayem"),
-    HumanMessage(content="What is sin(π/2)?", name="Sayem"),
-    HumanMessage(content="What is cos(0)?", name="Sayem"),
-    HumanMessage(content="What is tan(π/4)?", name="Sayem")
-])
+messages.extend(
+    [
+        HumanMessage(content="What is 2+2?", name="Sayem"),
+        HumanMessage(content="What is 2-2?", name="Sayem"),
+        HumanMessage(content="What is 2*2?", name="Sayem"),
+        HumanMessage(content="What is 2/2?", name="Sayem"),
+        HumanMessage(content="What is 2^3?", name="Sayem"),
+        HumanMessage(content="What is √16?", name="Sayem"),
+        HumanMessage(content="What is |−5|?", name="Sayem"),
+        HumanMessage(content="What is 5!?", name="Sayem"),
+        HumanMessage(content="What is 17 mod 5?", name="Sayem"),
+        HumanMessage(content="What is sin(π/2)?", name="Sayem"),
+        HumanMessage(content="What is cos(0)?", name="Sayem"),
+        HumanMessage(content="What is tan(π/4)?", name="Sayem"),
+    ]
+)
 
 # Bind tools to the agent
 agent = agent.bind_tools(all_tools)
