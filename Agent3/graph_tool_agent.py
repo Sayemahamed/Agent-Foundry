@@ -5,7 +5,10 @@ from IPython.display import Image, display
 from typing import Dict, List
 from langgraph.prebuilt import ToolNode, tools_condition
 import math
+from langgraph.checkpoint.memory import MemorySaver
 # from langchain_groq import ChatGroq
+
+memory = MemorySaver()
 
 
 class MessagesState(MessagesState):
@@ -133,7 +136,7 @@ builder.add_conditional_edges("agent", tools_condition)
 # builder.add_edge("agent", END)
 builder.add_edge("tools", "agent")
 
-graph = builder.compile()
+graph = builder.compile(checkpointer=memory)
 
 # Initial messages
 message = [
@@ -157,10 +160,11 @@ message = [
 
 # Visualize the graph
 display(Image(graph.get_graph().draw_mermaid_png()))
-
+config = {"configurable": {"thread_id": "1"}}
+# message = [HumanMessage("now subtract 19")]
 try:
     # Process messages through the graph
-    result = graph.invoke({"messages": message})
+    result = graph.invoke({"messages": message}, config=config)
     for message in result["messages"]:
         message.pretty_print()
 except Exception as e:
