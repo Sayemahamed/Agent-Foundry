@@ -5,6 +5,7 @@ from IPython.display import Image, display
 from typing import Dict, List
 from langgraph.prebuilt import ToolNode, tools_condition
 import math
+# from langchain_groq import ChatGroq
 
 
 class MessagesState(MessagesState):
@@ -114,9 +115,10 @@ def call_agent(state: MessagesState) -> Dict[str, List]:
 
 # Configure the agent with specific parameters
 agent = ChatOllama(
-    model="hf.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+    model="hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF",
     temperature=0.7,
 )
+# agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
 agent = agent.bind_tools([multiply, add, subtract, divide, power, sqrt, factorial])
 
 # Build the graph
@@ -129,7 +131,7 @@ builder.add_node(
 builder.add_edge(START, "agent")
 builder.add_conditional_edges("agent", tools_condition)
 # builder.add_edge("agent", END)
-builder.add_edge("tools", END)
+builder.add_edge("tools", "agent")
 
 graph = builder.compile()
 
@@ -138,6 +140,7 @@ message = [
     SystemMessage(
         content="""You are Qwen, a math problem solver. 
         You will be given a math problem and your task is to solve it using the tools provided.
+        For complex query solve it by dividing the problem into sub problems and solve one at a time.
         Available tools:
         - add(a, b): Add two numbers
         - subtract(a, b): Subtract two numbers
@@ -149,11 +152,7 @@ message = [
         - factorial(n): Calculate factorial
         """
     ),
-    HumanMessage(content="what is 69 ^ 3?"),
-    HumanMessage(content="what is 69 / 3?"),
-    HumanMessage(content="what is 69 - 3?"),
-    HumanMessage(content="what is 69 + 3?"),
-    HumanMessage(content="what is 69 * 3?"),
+    HumanMessage(content="what is 69 / 3 + 3 ?"),
 ]
 
 # Visualize the graph

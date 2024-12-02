@@ -3,6 +3,7 @@ from langgraph.graph import START, END, StateGraph
 from typing import TypedDict, Literal
 from IPython.display import display, Image
 
+
 class State(TypedDict):
     graph_state: str
 
