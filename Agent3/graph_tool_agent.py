@@ -118,7 +118,7 @@ def call_agent(state: MessagesState) -> Dict[str, List]:
 
 # Configure the agent with specific parameters
 agent = ChatOllama(
-    model="hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF",
+    model="hf.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF",
     temperature=0.7,
 )
 # agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
@@ -155,7 +155,7 @@ message = [
         - factorial(n): Calculate factorial
         """
     ),
-    HumanMessage(content="what is 69 / 3 + 3 - 3 * 1 ?"),
+    HumanMessage(content="what is 69 / 3 - 3 * 3 ?"),
 ]
 
 # Visualize the graph
