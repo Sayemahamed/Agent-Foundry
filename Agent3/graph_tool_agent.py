@@ -1,5 +1,5 @@
 from langchain_ollama import ChatOllama
-from langgraph.graph import START, END, MessagesState, StateGraph
+from langgraph.graph import START, MessagesState, StateGraph
 from langchain_core.messages import SystemMessage, HumanMessage
 from IPython.display import Image, display
 from typing import Dict, List
@@ -155,7 +155,7 @@ message = [
         - factorial(n): Calculate factorial
         """
     ),
-    HumanMessage(content="what is 69 / 3 + 3 ?"),
+    HumanMessage(content="what is 69 / 3 + 3 - 3 * 1 ?"),
 ]
 
 # Visualize the graph
