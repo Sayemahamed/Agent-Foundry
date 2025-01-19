@@ -33,6 +33,3 @@ graph = builder.compile()
 
 display(Image(graph.get_graph().draw_mermaid_png()))
 graph.invoke({"public_data": "hi"})
-
-
-# ------

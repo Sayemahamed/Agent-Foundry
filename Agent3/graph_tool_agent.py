@@ -6,7 +6,7 @@ from typing import Dict, List
 from langgraph.prebuilt import ToolNode, tools_condition
 import math
 from langgraph.checkpoint.memory import MemorySaver
-# from langchain_groq import ChatGroq
+from langchain_groq import ChatGroq
 
 memory = MemorySaver()
 
@@ -113,7 +113,7 @@ def call_agent(state: MessagesState) -> Dict[str, List]:
     Returns:
         Dict[str, List]: Updated state with new messages
     """
-    return {"messages": [agent.invoke(state["messages"])]}
+    return {"messages": []}
 
 
 # Configure the agent with specific parameters
@@ -121,7 +121,7 @@ agent = ChatOllama(
     model="hf.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF",
     temperature=0.7,
 )
-# agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
+agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
 agent = agent.bind_tools([multiply, add, subtract, divide, power, sqrt, factorial])
 
 # Build the graph
