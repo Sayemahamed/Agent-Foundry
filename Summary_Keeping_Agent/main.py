@@ -3,32 +3,30 @@ from langgraph.graph import START,END,StateGraph,MessagesState
 from langchain_ollama import ChatOllama
 from IPython.display import Image, display
 from langchain_core.messages import SystemMessage, HumanMessage
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import MemorySaver,PersistentDict
 
 class MessageState(MessagesState):
     summary:str
 memory = MemorySaver()
 agent = ChatOllama(
-    model="hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF", temperature=0.7
+    model="granite3.1-moe", temperature=0.7
 )
-agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
+# agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
 def invoke(state: MessageState):
     conversation_summary =state.get("summary","")
     return {"messages": [agent.invoke(state["messages"])], "summary":conversation_summary}
 
 def summarize(state: MessageState):
-    conversations=""
-    for message in state["messages"]:
-        conversations+=message.type+": "+message.content+"\n"
     internal_message=[
         SystemMessage(content="""Analyze the conversation between the user and the AI assistant.
 Identify and extract new key points.
 Cluster related ideas to condense the information.
 Eliminate repetition from the conversation and the previous summary.
 Update the summary only when new information is present."""),
-        HumanMessage(content="Previous summary: "+state["summary"]),
-        HumanMessage(content="Conversation: "+conversations)
-    ]
+        SystemMessage(content="Previous summary: "+state["summary"])
+    ]+state["messages"]
+    for message in internal_message:
+        message.pretty_print()
     response=agent.invoke(internal_message)
     return {"summary":response.content}
 
@@ -48,8 +46,8 @@ display(Image(graph.get_graph().draw_mermaid_png()))
 message = [
     HumanMessage(content="Which nation has the highest life expectancy?"),
 ]
-config = {"configurable": {"thread_id": "1"}}
-response=graph.invoke({"messages": message}, config=config)
+config: dict[str, dict[str, str]] = {"configurable": {"thread_id": "1"}}
+response=graph.invoke({"messages": message}, config=config) # type: ignore
 
 for message in response["messages"]:
     message.pretty_print()
