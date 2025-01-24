@@ -32,8 +32,8 @@ Cluster related ideas to condense the information.
 Eliminate repetition from the conversation and the previous summary.
 Update the summary only when new information is present.
 """),
-SystemMessage("Previous Summary: "+state["previous_summary"])]+state["messages"]
-    return {"summary":agent.invoke(input=internal_message).content}
+SystemMessage(content="Previous Summary: "+state["previous_summary"])]+state["messages"]
+    return {"previous_summary":agent.invoke(input=internal_message).content}
 
 builder = StateGraph(MessageState)
 builder.add_node(node="agent", action=invoke)
@@ -45,11 +45,17 @@ builder.add_edge(start_key="summarizer",end_key=END)
 
 graph: CompiledStateGraph = builder.compile(checkpointer=memory)
 
-display(Image(graph.get_graph().draw_mermaid_png()))
+display(Image(data=graph.get_graph().draw_mermaid_png()))
 
 config ={"configurable": {"thread_id": "1"}}
 
-response=graph.invoke({"messages":[HumanMessage("who are you")]},config=config) # type: ignore
+messages =[
+    HumanMessage("who are you?"),
+    HumanMessage("which country has the largest population?"),
+    # HumanMessage("Tell me about it's Economy")
+    ]
+
+response=graph.invoke({"messages":messages},config=config) # type: ignore
 
 for message in response["messages"]:
     message.pretty_print()
