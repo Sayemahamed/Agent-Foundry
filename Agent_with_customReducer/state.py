@@ -1,11 +1,11 @@
-from pydantic import BaseModel, field_validator
-from langchain_core.messages import AnyMessage
+from typing import Annotated,TypedDict
 
-class State(BaseModel):
-    messages: list[AnyMessage]
+def custom_reducer(left:list[int],right:list[int])->list[int]:
+    if not left:
+        left=[]
+    if not right:
+        right=[0]
+    return left+right
 
-    @field_validator("messages")
-    @classmethod
-    def validate_messages(cls, v):
-        # You can add custom validation logic here
-        return v
+class State(TypedDict):
+    count:Annotated[list[int],custom_reducer]
