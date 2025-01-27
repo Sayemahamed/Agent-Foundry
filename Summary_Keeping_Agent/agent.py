@@ -25,13 +25,16 @@ def decider(state: State) -> Literal["agent", "summarize"]:
 
 
 def call_agent(state: State) -> State:
-    print("^" * 60)
-    for message in state["messages"]:
-        message.pretty_print()
+    # print("^" * 60)
+    # for message in state["messages"]:
+    #     message.pretty_print()
     summary = state.get("summary", "")
     if not summary:
         summary = ""
     if len(summary) > 0:
+        print("*"*100)
+        print("Previous summary detected in Agent Node " )
+        print("*"*100)
         agent_response = agent.invoke(
             state["messages"]
             + [SystemMessage(content="Previous conversation summary: " + summary)]
@@ -42,10 +45,10 @@ def call_agent(state: State) -> State:
 
 
 def summarize(state: State) -> State:
-    print("*" * 60)
-    for message in state["messages"]:
-        message.pretty_print()
-        print(message.id)
+    # print("*" * 60)
+    # for message in state["messages"]:
+    #     message.pretty_print()
+    #     print(message.id)
     previous_summary: str = state.get("summary", "")  # type: ignore
     summary = agent.invoke(
         state["messages"][:4]
@@ -58,6 +61,9 @@ Eliminate repetition from the summary."""
         ]
     ).content
     if len(previous_summary) > 0:
+        print("*"*100)
+        print("Previous summary detected in Summary Node " )
+        print("*"*100)
         summary = agent.invoke(
             [
                 HumanMessage(
@@ -88,15 +94,15 @@ builder.add_edge("agent", END)
 
 graph = builder.compile(checkpointer=MemorySaver())
 
-graph.invoke(
-    {"messages": [HumanMessage(content="Hello, I am Sayem")]},
-    {"configurable": {"thread_id": 1}},
-)
-graph.invoke(
-    {"messages": [HumanMessage(content="can You Help me with maths")]},
-    {"configurable": {"thread_id": 1}},
-)
-graph.invoke(
-    {"messages": [HumanMessage(content="who are You?")]},
-    {"configurable": {"thread_id": 1}},
-)
+# graph.invoke(
+#     {"messages": [HumanMessage(content="Hello, I am Sayem")]},
+#     {"configurable": {"thread_id": 1}},
+# )
+# graph.invoke(
+#     {"messages": [HumanMessage(content="can You Help me with maths")]},
+#     {"configurable": {"thread_id": 1}},
+# )
+# graph.invoke(
+#     {"messages": [HumanMessage(content="who are You?")]},
+#     {"configurable": {"thread_id": 1}},
+# )
