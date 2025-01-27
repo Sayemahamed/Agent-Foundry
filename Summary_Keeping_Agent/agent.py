@@ -1,8 +1,9 @@
 from typing import Literal, TypedDict, Annotated, Optional
 from langgraph.graph import START, END, StateGraph
 from langchain_ollama import ChatOllama
-from langgraph.graph.message import BaseMessage, add_messages
-from langchain_core.messages import  HumanMessage
+from langgraph.graph.message import BaseMessage, add_messages, RemoveMessage
+from langchain_core.messages import HumanMessage, SystemMessage
+from langgraph.checkpoint.memory import MemorySaver
 
 
 class State(TypedDict):
@@ -24,13 +25,27 @@ def decider(state: State) -> Literal["agent", "summarize"]:
 
 
 def call_agent(state: State) -> State:
+    print("^" * 60)
+    for message in state["messages"]:
+        message.pretty_print()
     summary = state.get("summary", "")
-    agent_response = agent.invoke(state["messages"])
-    updated_messages = state["messages"] + [agent_response]
-    return {"messages": updated_messages, "summary": summary}
+    if not summary:
+        summary = ""
+    if len(summary) > 0:
+        agent_response = agent.invoke(
+            state["messages"]
+            + [SystemMessage(content="Previous conversation summary: " + summary)]
+        )
+    else:
+        agent_response = agent.invoke(state["messages"])
+    return {"messages": [agent_response], "summary": summary}
 
 
 def summarize(state: State) -> State:
+    print("*" * 60)
+    for message in state["messages"]:
+        message.pretty_print()
+        print(message.id)
     previous_summary: str = state.get("summary", "")  # type: ignore
     summary = agent.invoke(
         state["messages"][:4]
@@ -56,9 +71,10 @@ New summary: {summary}
                 )
             ]
         ).content
-    # Remove the first 4 messages (excluding the last 2)
-    updated_messages = state["messages"][-2:]
-    return {"summary": summary, "messages": updated_messages}
+    return {
+        "summary": summary,
+        "messages": [RemoveMessage(x.id) for x in state["messages"][:-1]],
+    }
 
 
 builder = StateGraph(State)
@@ -70,4 +86,17 @@ builder.add_conditional_edges(START, decider)
 builder.add_edge("summarize", "agent")
 builder.add_edge("agent", END)
 
-graph = builder.compile()
+graph = builder.compile(checkpointer=MemorySaver())
+
+graph.invoke(
+    {"messages": [HumanMessage(content="Hello, I am Sayem")]},
+    {"configurable": {"thread_id": 1}},
+)
+graph.invoke(
+    {"messages": [HumanMessage(content="can You Help me with maths")]},
+    {"configurable": {"thread_id": 1}},
+)
+graph.invoke(
+    {"messages": [HumanMessage(content="who are You?")]},
+    {"configurable": {"thread_id": 1}},
+)
