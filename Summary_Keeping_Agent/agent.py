@@ -2,7 +2,7 @@ from typing import Literal, TypedDict, Annotated, Optional
 from langgraph.graph import START, END, StateGraph
 from langchain_ollama import ChatOllama
 from langgraph.graph.message import BaseMessage, add_messages, RemoveMessage
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage,AIMessage
 from langgraph.checkpoint.memory import MemorySaver
 
 
@@ -39,8 +39,7 @@ def call_agent(state: State) -> State:
         print("Previous summary detected in Agent Node ")
         print("*" * 100)
         agent_response = agent.invoke(
-            state["messages"]
-            + [HumanMessage(content="Previous conversation summary: " + summary)]
+             [HumanMessage(content="Previous conversation summary: " + summary)]+state["messages"]
         )
     else:
         agent_response = agent.invoke(state["messages"])
