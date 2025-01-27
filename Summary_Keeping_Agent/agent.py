@@ -2,7 +2,7 @@ from typing import Literal, TypedDict, Annotated, Optional
 from langgraph.graph import START, END, StateGraph
 from langchain_ollama import ChatOllama
 from langgraph.graph.message import BaseMessage, add_messages, RemoveMessage
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage,ToolMessage
 from langgraph.checkpoint.memory import MemorySaver
 
 
@@ -18,6 +18,9 @@ agent = ChatOllama(
 
 
 def decider(state: State) -> Literal["agent", "summarize"]:
+    print("^"*60)
+    print(len(state["messages"]))
+    print("^"*60)
     if len(state["messages"]) >= 5:
         return "summarize"
     else:
@@ -32,12 +35,12 @@ def call_agent(state: State) -> State:
     if not summary:
         summary = ""
     if len(summary) > 0:
-        print("*"*100)
-        print("Previous summary detected in Agent Node " )
-        print("*"*100)
+        print("*" * 100)
+        print("Previous summary detected in Agent Node ")
+        print("*" * 100)
         agent_response = agent.invoke(
             state["messages"]
-            + [SystemMessage(content="Previous conversation summary: " + summary)]
+            + [ToolMessage(content="Previous conversation summary: " + summary)]
         )
     else:
         agent_response = agent.invoke(state["messages"])
@@ -61,9 +64,9 @@ Eliminate repetition from the summary."""
         ]
     ).content
     if len(previous_summary) > 0:
-        print("*"*100)
-        print("Previous summary detected in Summary Node " )
-        print("*"*100)
+        print("*" * 100)
+        print("Previous summary detected in Summary Node ")
+        print("*" * 100)
         summary = agent.invoke(
             [
                 HumanMessage(
