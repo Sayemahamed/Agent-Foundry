@@ -47,13 +47,51 @@ Welcome to **Agent-Foundry**, a repository for developing and experimenting with
 
 ---
 
-## 🔬 Acknowledgments
+## 📦 Installation
 
-Significant packages used in this project:
-- **LangGraph**
-- **LangChain**
-- **Ollama**
-- **Groq**
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Sayemahamed/Agent-Foundry.git
+   cd Agent-Foundry
+   ```
+
+2. **Set up a Python virtual environment:**
+   ```bash
+   python -m venv env
+   source env/bin/activate   # On Windows: env\Scripts\activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Install LangGraph in development mode (optional for contributions):**
+   ```bash
+   pip install -e .[dev]
+   ```
+   
+4. **Run langgraph (in dev mode)**
+   ```bash
+   langgraph dev
+   ```
+---
+
+## 🏆 Acknowledgments
+
+This project utilizes several key packages, including but not limited to:
+
+- **LangGraph**: Graph-based agent workflows.
+- **LangChain**: Modular LLM integrations.
+- **Ollama**: Local LLM serving.
+- **Groq**: Optimized inference for LLMs.
+- **FAISS**: Vector search and retrieval.
+- **SQLAlchemy**: Database interactions.
+- **Requests & HTTPX**: Web interactions.
+- **BeautifulSoup4**: Web scraping.
+- **Tiktoken**: Tokenization for LLMs.
+
+Special thanks to open-source contributors making AI development accessible.
 
 ---
 
