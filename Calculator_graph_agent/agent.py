@@ -1,10 +1,10 @@
 from langgraph.graph import START, END, StateGraph
-from state import State
+from state03 import State
 from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode, tools_condition
 from langchain_core.messages import SystemMessage
-from tools import *
+from Calculator_graph_agent.tools03 import *
 from langchain_groq import ChatGroq
 
 memory = MemorySaver()
@@ -34,5 +34,6 @@ builder.add_node(
 builder.add_edge(START, "agent")
 builder.add_conditional_edges("agent", tools_condition)
 builder.add_edge("tools", "agent")
+builder.add_edge("agent", END)
 
 graph = builder.compile(checkpointer=memory)
