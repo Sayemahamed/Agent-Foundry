@@ -1,8 +1,7 @@
-from turtle import st
 from typing import Literal
 import random
 from IPython.display import Image, display
-from src.agent.state import State
+from state import State
 from langgraph.graph import START, END, StateGraph
 
 
