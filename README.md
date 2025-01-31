@@ -54,16 +54,6 @@ Significant packages used in this project:
 - **LangChain**
 - **Ollama**
 - **Groq**
-- **SQLAlchemy**
-- **Pydantic**
-- **FastAPI**
-- **AIOHttp**
-- **Requests**
-- **BeautifulSoup4**
-- **Tiktoken**
-- **Uvicorn**
-- **Matplotlib**
-- **NumPy**
 
 ---
 
