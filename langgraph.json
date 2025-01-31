@@ -5,8 +5,9 @@
 ],
   "graphs": {
     "BasicGraph": "./01/graph.py:graph",
-    "Agent_with_customReducer":"./02/agent.py:graph",
-    "Calculator_agent": "./03/graph.py:graph"
+    "Graph_with_customReducer":"./02/agent.py:graph",
+    "Calculator_agent": "./03/graph.py:graph",
+    "Summary_keeping_agent": "./04/graph.py:graph"
   },
   "env": ".env"
 }
