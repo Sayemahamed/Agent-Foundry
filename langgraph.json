@@ -1,0 +1,15 @@
+{
+  "dependencies": [
+    "./01/",
+    "./02/",
+    "./03/",
+    "./04/"
+],
+  "graphs": {
+    "BasicGraph": "./01/graph.py:graph",
+    "Graph_with_customReducer":"./02/graph.py:graph",
+    "Calculator_agent": "./03/graph.py:graph",
+    "Summary_keeping_agent": "./04/graph.py:graph"
+  },
+  "env": ".env"
+}
