@@ -1,7 +1,6 @@
 from typing import Literal
 import random
-from IPython.display import Image, display
-from state import State
+from state01 import State
 from langgraph.graph import START, END, StateGraph
 
 
@@ -37,5 +36,3 @@ builder.add_edge("Node_2", END)
 builder.add_edge("Node_3", END)
 
 graph = builder.compile()
-
-display(Image(graph.get_graph().draw_mermaid_png()))

@@ -1,7 +1,10 @@
 {
-  "dependencies": ["./01/"],
+  "dependencies": ["./01/",
+        "./02/"
+],
   "graphs": {
-    "BasicGraph": "./01/graph.py:graph"
+    "BasicGraph": "./01/graph.py:graph",
+    "Agent_with_customReducer":"./02/agent.py:graph"
   },
   "env": ".env"
 }
