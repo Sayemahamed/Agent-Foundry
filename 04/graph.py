@@ -2,8 +2,9 @@ from typing import Literal, TypedDict, Annotated, Optional
 from langgraph.graph import START, END, StateGraph
 from langchain_ollama import ChatOllama
 from langgraph.graph.message import BaseMessage, add_messages, RemoveMessage
-from langchain_core.messages import HumanMessage,AIMessage
+from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
+from langchain_groq import ChatGroq
 
 
 class State(TypedDict):
@@ -12,15 +13,17 @@ class State(TypedDict):
 
 
 agent = ChatOllama(
-    model="granite3.1-moe",
+    model="qwen2.5:0.5b",
+    # model="granite3.1-moe",
     temperature=0.9,
 )
+# agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
 
 
 def decider(state: State) -> Literal["agent", "summarize"]:
-    print("^"*60)
+    print("^" * 60)
     print(len(state["messages"]))
-    print("^"*60)
+    print("^" * 60)
     if len(state["messages"]) >= 5:
         return "summarize"
     else:
@@ -39,7 +42,8 @@ def call_agent(state: State) -> State:
         print("Previous summary detected in Agent Node ")
         print("*" * 100)
         agent_response = agent.invoke(
-             [HumanMessage(content="Previous conversation summary: " + summary)]+state["messages"]
+            [HumanMessage(content="Previous conversation summary: " + summary)]
+            + state["messages"]
         )
     else:
         agent_response = agent.invoke(state["messages"])
@@ -80,8 +84,8 @@ New summary: {summary}
             ]
         ).content
     return {
-        "summary": summary,
-        "messages": [RemoveMessage(x.id) for x in state["messages"][:-1]],
+        "summary": summary, # type: ignore
+        "messages": [RemoveMessage(x.id) for x in state["messages"][:-1]], # type: ignore
     }
 
 
