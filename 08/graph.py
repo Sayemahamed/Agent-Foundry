@@ -12,12 +12,12 @@ class State(TypedDict):
     summary: Optional[str]
 
 
-agent = ChatOllama(
-    model="qwen2.5:0.5b",
-    # model="granite3.1-moe",
-    temperature=0.9,
-)
-# agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
+# agent = ChatOllama(
+#     model="qwen2.5:0.5b",
+#     # model="granite3.1-moe",
+#     temperature=0.9,
+# )
+agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
 
 
 def decider(state: State) -> Literal["agent", "summarize"]:
@@ -108,7 +108,7 @@ graph = builder.compile(checkpointer=MemorySaver())
 #     {"messages": [HumanMessage(content="can You Help me with maths")]},
 #     {"configurable": {"thread_id": 1}},
 # )
-graph.invoke(
-    {"messages": [HumanMessage(content="who are You?")]},
-    {"configurable": {"thread_id": 1}},
-)
+# graph.invoke(
+#     {"messages": [HumanMessage(content="who are You?")]},
+#     {"configurable": {"thread_id": 1}},
+# )

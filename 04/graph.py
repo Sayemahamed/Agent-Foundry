@@ -13,12 +13,12 @@ class State(TypedDict):
     summary: Optional[str]
 
 
-agent = ChatOllama(
-    model="qwen2.5:0.5b",
-    # model="granite3.1-moe",
-    temperature=0.9,
-)
-# agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
+# agent = ChatOllama(
+#     model="qwen2.5:0.5b",
+#     # model="granite3.1-moe",
+#     temperature=0.9,
+# )
+agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
 
 
 def decider(state: State) -> Literal["agent", "summarize"]:
@@ -90,7 +90,7 @@ New summary: {summary}
     }
 
 
-builder = StateGraph(State)
+builder = StateGraph(state_schema=State)
 
 builder.add_node(node="agent", action=call_agent)
 builder.add_node(node="summarize", action=summarize)

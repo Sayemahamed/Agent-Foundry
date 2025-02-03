@@ -5,15 +5,16 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode, tools_condition
 from tools03 import *
 from langchain_groq import ChatGroq
+from langchain_core.messages import HumanMessage
 
 memory = MemorySaver()
 
-agent = ChatOllama(
-    model="qwen2.5:0.5b",
-    # model="granite3.1-moe",
-    temperature=0,
-)
-# agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
+# agent = ChatOllama(
+#     model="qwen2.5:0.5b",
+#     # model="granite3.1-moe",
+#     temperature=0,
+# )
+agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
 agent = agent.bind_tools([multiply, divide, add, subtract, pow, sqrt, factorial])
 
 
@@ -35,4 +36,20 @@ builder.add_conditional_edges("agent", tools_condition)
 builder.add_edge("tools", "agent")
 builder.add_edge("agent", END)
 
-graph = builder.compile(checkpointer=memory)
+graph = builder.compile(interrupt_before=["tools"],checkpointer=memory)
+
+# for event in graph.stream(
+#     input={"messages": [HumanMessage(content="what is 2+2?")]},
+#     config={"configurable": {"thread_id": 1}},
+#     stream_mode="values"
+# ):
+#     event["messages"][-1].pretty_print()
+
+    # It will continue after the interrupt (before the "tools" node)
+
+# for event in graph.stream(
+#     input=None,
+#     config={"configurable": {"thread_id": 1}},
+#     stream_mode="values"
+# ):
+#     event["messages"][-1].pretty_print()
