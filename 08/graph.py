@@ -5,7 +5,6 @@ from langgraph.graph.message import BaseMessage, add_messages, RemoveMessage
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_groq import ChatGroq
-from langgraph.graph.state import CompiledStateGraph
 
 
 class State(TypedDict):
@@ -92,14 +91,14 @@ New summary: {summary}
 
 builder = StateGraph(State)
 
-builder.add_node(node="agent", action=call_agent)
-builder.add_node(node="summarize", action=summarize)
+builder.add_node("agent", call_agent)
+builder.add_node("summarize", summarize)
 
-builder.add_conditional_edges(source=START, path=decider)
-builder.add_edge(start_key="summarize", end_key="agent")
-builder.add_edge(start_key="agent", end_key=END)
+builder.add_conditional_edges(START, decider)
+builder.add_edge("summarize", "agent")
+builder.add_edge("agent", END)
 
-graph: CompiledStateGraph = builder.compile(interrupt_before=["summarize"],checkpointer=MemorySaver())
+graph = builder.compile(checkpointer=MemorySaver())
 
 # graph.invoke(
 #     {"messages": [HumanMessage(content="Hello, I am Sayem")]},
@@ -109,7 +108,7 @@ graph: CompiledStateGraph = builder.compile(interrupt_before=["summarize"],check
 #     {"messages": [HumanMessage(content="can You Help me with maths")]},
 #     {"configurable": {"thread_id": 1}},
 # )
-# graph.invoke(
-#     {"messages": [HumanMessage(content="who are You?")]},
-#     {"configurable": {"thread_id": 1}},
-# )
+graph.invoke(
+    {"messages": [HumanMessage(content="who are You?")]},
+    {"configurable": {"thread_id": 1}},
+)
