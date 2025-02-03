@@ -108,7 +108,7 @@ graph = builder.compile(checkpointer=MemorySaver())
 #     {"messages": [HumanMessage(content="can You Help me with maths")]},
 #     {"configurable": {"thread_id": 1}},
 # )
-# graph.invoke(
-#     {"messages": [HumanMessage(content="who are You?")]},
-#     {"configurable": {"thread_id": 1}},
-# )
+graph.invoke(
+    {"messages": [HumanMessage(content="who are You?")]},
+    {"configurable": {"thread_id": 1}},
+)
