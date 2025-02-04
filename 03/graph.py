@@ -48,7 +48,7 @@ graph = builder.compile(interrupt_before=["tools"],checkpointer=memory)
     # It will continue after the interrupt (before the "tools" node)
 
 # for event in graph.stream(
-#     input=None,
+#     input=None, # Input should be None to continue after the interrupt
 #     config={"configurable": {"thread_id": 1}},
 #     stream_mode="values"
 # ):
