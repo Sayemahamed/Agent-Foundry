@@ -3,7 +3,7 @@ from state import State, AgentOutput
 from langchain_core.messages import SystemMessage, AIMessage
 from tools import tool
 
-# Initialize LLM with the desired model and temperature
+# Initialize the LLM with the desired model and temperature
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
 
 def CEO_agent(state: State) -> State:
@@ -20,16 +20,17 @@ You are the **CEO** of a research team that includes:
 - **You**, the leader who coordinates the team and ensures high-quality research.
 
 ### Task:
-Your objective is to **collaborate** with your team members to **conduct thorough research** on the given topic.
+Collaborate with your team members to conduct thorough research on the given topic.
 - **Delegate tasks effectively.**
 - **Ensure accuracy and depth** in the research.
-- **Synthesize information** into a structured and insightful report.
+- **Synthesize information** into a structured, insightful report.
 
-Leverage your team’s strengths to **produce well-organized and insightful research** on the topic provided.
+Leverage your team’s strengths to produce well-organized and insightful research on the provided topic.
 """
             )
         ] + state["messages"]
     )
+    print (response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
 
 def Planner_agent(state: State) -> State:
@@ -45,19 +46,20 @@ You are the **Planner** for a research team that includes:
 - A **CEO** who leads and coordinates the research effort.
 
 ### Task:
-Your objective is to **design a clear and efficient research plan** for the given topic.
+Design a clear and efficient research plan for the given topic.
 - **Outline the research process step-by-step.**
 - **Identify key areas** that require further investigation.
 - **Allocate tasks** to team members effectively.
 
-Provide a detailed plan that ensures comprehensive coverage of the topic.
+Provide a detailed plan to ensure comprehensive coverage of the topic.
 """
             )
         ] + state["messages"]
     )
+    print (response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
 
-# Bind additional tools if needed
+# Bind tools to the LLM if needed (e.g., for internet searches)
 llm = llm.bind_tools([tool])
 
 def Internet_agent(state: State) -> State:
@@ -73,14 +75,15 @@ You are the **Internet Researcher** tasked with gathering data and information f
 - Your findings will support the overall research report.
 
 ### Task:
-Your objective is to **search the internet for relevant information** on the given topic.
+Search the internet for relevant information on the given topic.
 - **Identify credible sources** and extract key data.
 - **Summarize your findings** concisely.
 - **Provide references** where applicable.
 
-Deliver detailed and verified information that can be integrated into the final report.
+Deliver detailed, verified information that can be integrated into the final report.
 """
             )
         ] + state["messages"]
     )
+    print (response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
