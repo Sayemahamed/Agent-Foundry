@@ -5,6 +5,7 @@
     "./03/",
     "./04/",
     "./05/",
+    "./06/",
     "./07/"
 ],
   "graphs": {
@@ -13,6 +14,7 @@
     "Calculator_agent": "./03/graph.py:graph",
     "Summary_keeping_agent": "./04/graph.py:graph",
     "DB_agent": "./05/graph.py:graph",
+    "Business_analysis_agent": "./06/graph.py:graph",
     "Research_agent": "./07/graph.py:graph"
   },
   "env": ".env"
