@@ -25,9 +25,9 @@ builder.add_node("tools", ToolNode([tool]))
 
 builder.add_edge(START, "CEO")
 builder.add_conditional_edges("CEO", router)
-builder.add_edge("Internet", "CEO")
+builder.add_conditional_edges("Planner", router)
+builder.add_conditional_edges("Internet", router)
 builder.add_conditional_edges("Internet",tools_condition)
-builder.add_edge("Planner", "CEO")
 builder.add_edge("tools", "Internet")
 builder.add_edge("CEO", END)
 

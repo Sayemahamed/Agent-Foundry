@@ -30,4 +30,6 @@ def tool(topic:str):
     str
         The search results.
     """
-    return tavily.run(topic)
+    temp =tavily.run(topic)
+    print(temp)
+    return temp
