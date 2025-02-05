@@ -1,7 +1,7 @@
 from langchain_groq import ChatGroq
 from state import State, AgentOutput
 from langchain_core.messages import SystemMessage, AIMessage
-
+from tools import tool
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
 
 
@@ -33,9 +33,9 @@ Leverage your team’s strengths to **produce well-organized and insightful rese
 
 def Planner_agent(state: State) -> State:
     print("---Planner_agent---")
-    response = llm.with_structured_output(schema=AgentOutput).invoke(
-        [           SystemMessage(
-                content="""## Role: Planner of a Research Team  
+    response = llm.with_structured_output(schema=AgentOutput
+                                          ).invoke(
+                                              [SystemMessage("""## Role: Planner of a Research Team  
 
 You are the **Planner** of a research team that includes:  
 - An **Internet Researcher** who gathers relevant information.  
@@ -47,10 +47,12 @@ Your objective is to **collaborate** with your team members to **conduct thoroug
 - **Ensure accuracy and depth** in the research.  
 - **Synthesize information** into a structured and insightful report.  
 
-Leverage your team’s strengths to **produce well-organized and insightful research** on the topic provided.  
-"""
-            )+state["messages"]])
+Leverage your team’s strengths to **produce well-organized and insightful research** on the topic provided."""),]+[ state["messages"]])
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
 
+llm =llm.bind_tools([tool])
 def Internet_agent(state:State)->State:
-    
+    print("------Internet_agent--------")
+    response
+
+
