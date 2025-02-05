@@ -36,7 +36,7 @@ builder.add_conditional_edges("agent", tools_condition)
 builder.add_edge("tools", "agent")
 builder.add_edge("agent", END)
 
-graph = builder.compile(interrupt_before=["tools"],checkpointer=memory)
+graph = builder.compile(interrupt_before=["tools"], checkpointer=memory)
 
 # for event in graph.stream(
 #     input={"messages": [HumanMessage(content="what is 2+2?")]},
@@ -45,7 +45,7 @@ graph = builder.compile(interrupt_before=["tools"],checkpointer=memory)
 # ):
 #     event["messages"][-1].pretty_print()
 
-    # It will continue after the interrupt (before the "tools" node)
+# It will continue after the interrupt (before the "tools" node)
 
 # for event in graph.stream(
 #     input=None, # Input should be None to continue after the interrupt

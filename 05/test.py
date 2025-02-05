@@ -1,6 +1,8 @@
 import sqlite3
 
 con: sqlite3.Cursor = sqlite3.connect(database="database.sqlite").cursor()
+
+
 def database(str: str) -> list[tuple]:
     """
     Executes a SQL query on the connected SQLite database and retrieves all results.
@@ -20,4 +22,3 @@ database("SELECT name FROM sqlite_master WHERE type='table';")
 for table in database("SELECT name FROM sqlite_master WHERE type='table';"):
     print(table[0])
     print(database(f"PRAGMA table_info({table[0]})"))
-

@@ -85,8 +85,8 @@ New summary: {summary}
             ]
         ).content
     return {
-        "summary": summary, # type: ignore
-        "messages": [RemoveMessage(x.id) for x in state["messages"][:-1]], # type: ignore
+        "summary": summary,  # type: ignore
+        "messages": [RemoveMessage(x.id) for x in state["messages"][:-1]],  # type: ignore
     }
 
 
@@ -99,7 +99,9 @@ builder.add_conditional_edges(source=START, path=decider)
 builder.add_edge(start_key="summarize", end_key="agent")
 builder.add_edge(start_key="agent", end_key=END)
 
-graph: CompiledStateGraph = builder.compile(interrupt_before=["summarize"],checkpointer=MemorySaver())
+graph: CompiledStateGraph = builder.compile(
+    interrupt_before=["summarize"], checkpointer=MemorySaver()
+)
 
 # graph.invoke(
 #     {"messages": [HumanMessage(content="Hello, I am Sayem")]},
