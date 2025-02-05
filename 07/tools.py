@@ -17,4 +17,17 @@ tavily = TavilySearchResults(
     # args_schema=...
 )
 def tool(topic:str):
+    """
+    Searches the internet for the given topic and returns the results.
+    
+    Parameters
+    ----------
+    topic : str
+        The topic to search for.
+    
+    Returns
+    -------
+    str
+        The search results.
+    """
     return tavily.run(topic)
