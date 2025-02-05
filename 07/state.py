@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class AgentOutput(BaseModel):
     message: str
-    next: Literal["researcher", "internet_researcher"]
+    next: Literal["Planner", "Internet","CEO"]
 
 
 class State(TypedDict):
