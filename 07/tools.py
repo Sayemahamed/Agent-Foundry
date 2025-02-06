@@ -1,5 +1,6 @@
 from langchain_community.tools import TavilySearchResults, DuckDuckGoSearchResults
 import wikipedia
+import rich
 
 # Configure Tavily Search Tool
 tavily = TavilySearchResults(
@@ -27,13 +28,12 @@ def tavily_tool(topic: str) -> str:
         The search results as a string.
     """
     result = tavily.invoke({"query": topic})
-    print("Tavily Search Results:", result)
+    rich.print("Tavily Search Results:", result)
     return result
 
 # Configure DuckDuckGo Search Tool
 duck = DuckDuckGoSearchResults(
-    max_results=5
-    # Additional parameters can be set here if required
+
 )
 
 def duck_tool(topic: str) -> str:
@@ -51,7 +51,7 @@ def duck_tool(topic: str) -> str:
         The search results as a string.
     """
     result = duck.invoke({"query": topic})
-    print("DuckDuckGo Search Results:", result)
+    rich.print("DuckDuckGo Search Results:", result)
     return result
 
 def wikipedia_tool(topic: str) -> str:
@@ -70,7 +70,7 @@ def wikipedia_tool(topic: str) -> str:
     """
     try:
         summary = wikipedia.summary(topic, sentences=3)
-        print("Wikipedia Summary:", summary)
+        rich.print("Wikipedia Summary:", summary)
         return summary
     except Exception as e:
         error_message = f"Error retrieving Wikipedia summary: {e}"
@@ -80,12 +80,6 @@ def wikipedia_tool(topic: str) -> str:
 # Example usage:
 if __name__ == "__main__":
     search_topic = "vector databases"
-    
-    print("=== Tavily Search ===")
-    tavily_result = tavily_tool(search_topic)
-    
-    print("\n=== Wikipedia Summary ===")
-    wiki_result = wikipedia_tool(search_topic)
-    
-    print("\n=== DuckDuckGo Search ===")
-    duck_result = duck_tool(search_topic)
+    wikipedia_tool(search_topic)
+    tavily_tool(search_topic)
+    duck_tool(search_topic)
