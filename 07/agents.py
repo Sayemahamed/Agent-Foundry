@@ -66,79 +66,32 @@ Provide a detailed plan to ensure comprehensive coverage of the topic.
     print("Planner_agent response:", response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
 
-def Internet_agent(state: State) -> State:
+def Critic_agent(state: State) -> State:
     """
-    Internet Agent: Searches for relevant data online using the LLM and bound tools.
+    Critic Agent: Reviews the research report and provides feedback.
     """
-    print("------Internet_agent--------")
+    print("---Critic_agent---")
     response = llm.with_structured_output(schema=AgentOutput).invoke(
         [
             SystemMessage(
                 content="""\
-## Role: Internet Researcher of a Research Team
+## Role: Research Critic of a Research Team
 
-You are the **Internet Researcher** tasked with gathering data and information from online sources.
-- You work under the guidance of the CEO and Planner.
-- Your findings will support the overall research report.
+You are the **Critic** for a research team that includes:
+- A **Planner** who designs the research plan.
+- An **Internet Researcher** who gathers relevant information.
+- A **CEO** who leads and coordinates the research effort.
 
-### Task:
-Search the internet for relevant information on the given topic.
-- **Identify credible sources** and extract key data.
-- **Summarize your findings** concisely.
-- **Provide references** where applicable.
+### Task:   
+Review the research report and provide constructive feedback.
+- **Identify areas for improvement.**
+- **Suggest alternative approaches.**
+- **Evaluate the accuracy and depth of the report.**
 
-Deliver detailed, verified information that can be integrated into the final report.
+Provide constructive feedback to improve the research report.
 """
-            )
+            )    
         ] + state["messages"]
     )
-    print("Internet_agent response:", response)
+    print("Critic_agent response:", response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
-
-def Search_agent(state: State) -> State:
-    """
-    Search Agent: Uses multiple external search tools to gather diverse information
-    on the research topic, and then synthesizes these findings into a summary.
-    """
-    print("-----Search_agent-----")
-    # Assume that the latest message holds the research topic/query.
-    if state["messages"]:
-        query = state["messages"][-1].content
-    else:
-        query = "default topic"
-    
-    # Get search results from multiple tools.
-    print("Searching for topic:", query)
-    tavily_result = tavily_tool(query)
-    wiki_result = wikipedia_tool(query)
-    duck_result = duck_tool(query)
-    
-    # Combine results into one summary prompt.
-    combined_results = (
-        f"### Search Results for: {query}\n\n"
-        f"**Tavily Search:**\n{tavily_result}\n\n"
-        f"**Wikipedia Summary:**\n{wiki_result}\n\n"
-        f"**DuckDuckGo Search:**\n{duck_result}"
-    )
-    print("Combined search results:\n", combined_results)
-    
-    # Use the LLM to synthesize the combined search results.
-    response = llm.with_structured_output(schema=AgentOutput).invoke(
-        [
-            SystemMessage(
-                content="""\
-## Role: Search Synthesizer
-
-You are tasked with synthesizing multiple search results into a coherent summary.
-### Task:
-Combine the provided search results into a concise and informative summary that highlights key insights and data points.
-"""
-            ),
-            SystemMessage(content=combined_results)
-        ] + state["messages"]
-    )
-    print("Search_agent response:", response)
-    return {"messages": [AIMessage(content=response.message)], "next": response.next}
-
-# Bind the primary tool to the LLM (this could be used as a fallback or for simple queries)
-llm = llm.bind_tools([tavily_tool])
