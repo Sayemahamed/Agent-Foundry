@@ -1,12 +1,16 @@
 from langchain_groq import ChatGroq
 from state import State, AgentOutput
 from langchain_core.messages import SystemMessage, AIMessage
-from tools import tool
+# Import our tool functions from the tools module
+from tools import  tavily_tool, duck_tool, wikipedia_tool
 
 # Initialize the LLM with the desired model and temperature
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
 
 def CEO_agent(state: State) -> State:
+    """
+    CEO Agent: Coordinates the research team, delegates tasks, and synthesizes inputs.
+    """
     print("---CEO_agent---")
     response = llm.with_structured_output(schema=AgentOutput).invoke(
         [
@@ -30,10 +34,13 @@ Leverage your team’s strengths to produce well-organized and insightful resear
             )
         ] + state["messages"]
     )
-    print (response)
+    print("CEO_agent response:", response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
 
 def Planner_agent(state: State) -> State:
+    """
+    Planner Agent: Designs a research plan, outlines steps, and allocates tasks.
+    """
     print("---Planner_agent---")
     response = llm.with_structured_output(schema=AgentOutput).invoke(
         [
@@ -56,13 +63,13 @@ Provide a detailed plan to ensure comprehensive coverage of the topic.
             )
         ] + state["messages"]
     )
-    print (response)
+    print("Planner_agent response:", response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
 
-# Bind tools to the LLM if needed (e.g., for internet searches)
-llm = llm.bind_tools([tool])
-
 def Internet_agent(state: State) -> State:
+    """
+    Internet Agent: Searches for relevant data online using the LLM and bound tools.
+    """
     print("------Internet_agent--------")
     response = llm.with_structured_output(schema=AgentOutput).invoke(
         [
@@ -85,5 +92,53 @@ Deliver detailed, verified information that can be integrated into the final rep
             )
         ] + state["messages"]
     )
-    print (response)
+    print("Internet_agent response:", response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
+
+def Search_agent(state: State) -> State:
+    """
+    Search Agent: Uses multiple external search tools to gather diverse information
+    on the research topic, and then synthesizes these findings into a summary.
+    """
+    print("-----Search_agent-----")
+    # Assume that the latest message holds the research topic/query.
+    if state["messages"]:
+        query = state["messages"][-1].content
+    else:
+        query = "default topic"
+    
+    # Get search results from multiple tools.
+    print("Searching for topic:", query)
+    tavily_result = tavily_tool(query)
+    wiki_result = wikipedia_tool(query)
+    duck_result = duck_tool(query)
+    
+    # Combine results into one summary prompt.
+    combined_results = (
+        f"### Search Results for: {query}\n\n"
+        f"**Tavily Search:**\n{tavily_result}\n\n"
+        f"**Wikipedia Summary:**\n{wiki_result}\n\n"
+        f"**DuckDuckGo Search:**\n{duck_result}"
+    )
+    print("Combined search results:\n", combined_results)
+    
+    # Use the LLM to synthesize the combined search results.
+    response = llm.with_structured_output(schema=AgentOutput).invoke(
+        [
+            SystemMessage(
+                content="""\
+## Role: Search Synthesizer
+
+You are tasked with synthesizing multiple search results into a coherent summary.
+### Task:
+Combine the provided search results into a concise and informative summary that highlights key insights and data points.
+"""
+            ),
+            SystemMessage(content=combined_results)
+        ] + state["messages"]
+    )
+    print("Search_agent response:", response)
+    return {"messages": [AIMessage(content=response.message)], "next": response.next}
+
+# Bind the primary tool to the LLM (this could be used as a fallback or for simple queries)
+llm = llm.bind_tools([tavily_tool])

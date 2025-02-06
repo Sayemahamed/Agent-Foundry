@@ -7,7 +7,6 @@ anyio==4.8.0
 asttokens==3.0.0
 attrs==24.3.0
 beautifulsoup4==4.12.3
-black==25.1.0
 certifi==2024.12.14
 cffi==1.17.1
 charset-normalizer==3.4.1
@@ -105,3 +104,6 @@ wcwidth==0.2.13
 wikipedia==1.4.0
 yarl==1.18.3
 zstandard==0.23.0
+tavily-python
+ruff
+rich
