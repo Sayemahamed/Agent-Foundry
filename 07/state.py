@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class AgentOutput(BaseModel):
     message: str
-    next: Literal["Planner", "Internet", "CEO"]
+    next: Literal["Planner", "Critic", "CEO"]
 
 class State(MessagesState):
     next: Optional[str]

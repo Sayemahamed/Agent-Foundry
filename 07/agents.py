@@ -1,8 +1,6 @@
 from langchain_groq import ChatGroq
 from state import State, AgentOutput
 from langchain_core.messages import SystemMessage, AIMessage
-# Import our tool functions from the tools module
-from tools import  tavily_tool, duck_tool, wikipedia_tool
 
 # Initialize the LLM with the desired model and temperature
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)

@@ -4,7 +4,7 @@ import rich
 
 # Configure Tavily Search Tool
 tavily = TavilySearchResults(
-    max_results=5,
+    max_results=10,
     search_depth="advanced",
     include_answer=False,
     include_raw_content=False,
@@ -79,7 +79,5 @@ def wikipedia_tool(topic: str) -> str:
 
 # Example usage:
 if __name__ == "__main__":
-    search_topic = "vector databases"
-    wikipedia_tool(search_topic)
+    search_topic = "10 job listing of dotnet developer in linkedin "
     tavily_tool(search_topic)
-    duck_tool(search_topic)
