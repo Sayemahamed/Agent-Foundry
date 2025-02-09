@@ -4,8 +4,9 @@ from pydantic import BaseModel
 
 class AgentResponse(BaseModel):
     message:str
-    next:Literal["Planner", "Critic", "Database"]
+    next:Literal["Analyst", "Critic", "Database","END"]
 
 class State(MessagesState):
     criticized:int
-    next:str
+    next:Literal["Analyst", "Critic", "Database","END"]
+    pre:Literal["Analyst", "Critic"]
