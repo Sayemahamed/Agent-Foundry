@@ -9,4 +9,4 @@ class AgentResponse(BaseModel):
 class State(MessagesState):
     criticized:int
     next:Literal["Analyst", "Critic", "Database","END"]
-    pre:Literal["Analyst", "Critic"]
+    pre:Literal["Analyst", "Critic", "Database"]

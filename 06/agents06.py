@@ -1,10 +1,12 @@
 from state06 import State,AgentResponse
 from langchain_groq import ChatGroq
-from langchain_core.messages import SystemMessage, AIMessage, HumanMessage
+from langchain_core.messages import SystemMessage, AIMessage, HumanMessage,RemoveMessage
 from rich import print
 import sqlite3
 
-llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
+
+
+llm = ChatGroq(model="llama-3.3-70b-specdec", temperature=0)
 
 cursor = sqlite3.connect("database.sqlite").cursor()
 def get_database_info():
@@ -48,6 +50,8 @@ Your goal is to provide clear, concise, and insightful reports based on the avai
 
 # Finalize and conclude the process and deliver the report.
 - `Your report` next=END
+
+### When ever calling the Database Tool, Give only the SQL query.
 """
 critic_prompt=f"""\
 ## Role: Critic in a Research Team  
@@ -73,25 +77,39 @@ Your goal is to provide **constructive feedback** to the Data Analyst. Use your 
   # The Database tool will execute the query and return the schema information of the table to the Data Analyst.
 - `Your feedback` next=Analyst
   # The Data Analyst will receive your feedback and refine their report based on your suggestions.
+
+### When ever calling the Database Tool, Give only the SQL query.
 """
 
 def Analyzer_agent(state: State) -> State:
     print("---Analyzer_agent---")
+    state["criticized"] = state.get("criticized",0)
+    state["pre"] = state.get("pre","Analyst")
+    state["next"] = state.get("next","END")
     if state["criticized"]<2:
         response = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=analyzer_prompt)]+state["messages"])
     else:
         response = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=critic_prompt)]+state["messages"]+[HumanMessage(content="Finalize and conclude the process and deliver the report.")])
     print("Analyzer_agent response:", response)
-    return {"messages": [AIMessage(content=response.message)], "next": response.next,"pre":"Analyst","criticized":state["criticized"]+1}
+    if state["pre"]=="Database":
+      return {"messages": [AIMessage(content=response.message),RemoveMessage(state["messages"][-1].id)], "next": response.next,"pre":"Analyst","criticized":state["criticized"]}
+    elif state["pre"]=="Critic":
+      return {"messages": [AIMessage(content=response.message)], "next": response.next,"pre":"Analyst","criticized":state["criticized"]+1}
+    return {"messages": [AIMessage(content=response.message)], "next": response.next,"pre":"Analyst","criticized":state["criticized"]}
 
 def Critic_agent(state: State) -> State:
     print("---Critic_agent---")
     response = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=critic_prompt)]+state["messages"])
     print("Critic_agent response:", response)
+    if state["pre"]=="Database":
+      return {"messages": [AIMessage(content=response.message),RemoveMessage(state["messages"][-1].id)], "next": response.next,"pre":"Critic","criticized":state["criticized"]}
     return {"messages": [AIMessage(content=response.message)], "next": response.next,"pre":"Critic","criticized":state["criticized"]}
 def Database_agent(state: State) -> State:
     print("---Database_agent---")
     response =[]
-    for message in cursor.execute(str(state["messages"][-1].content)).fetchall():
-        response.append(str(message))
-    return {"messages": [AIMessage(content=response)], "next": state["pre"],"pre":state["pre"],"criticized":state["criticized"]}
+    try:
+        for message in cursor.execute(str(state["messages"][-1].content)).fetchall():
+            response.append(str(message))
+    except sqlite3.Error as e:
+        response.append(f"Database error: {e}")
+    return {"messages": [AIMessage(content=str(response))], "next": state["pre"],"pre":"Database","criticized":state["criticized"]}

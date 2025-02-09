@@ -15,9 +15,9 @@ def router(state: State) -> Literal["__end__", "Critic", "Analyst","Database"]:
 builder = StateGraph(State)
 builder.add_node("Critic", Critic_agent)
 builder.add_node("Database", Database_agent)
-builder.add_node("Analyzer", Analyzer_agent)
-builder.add_edge(START, "Analyzer")
-builder.add_conditional_edges("Analyzer", router)
+builder.add_node("Analyst", Analyzer_agent)
+builder.add_edge(START, "Analyst")
+builder.add_conditional_edges("Analyst", router)
 builder.add_conditional_edges("Critic", router)
 builder.add_conditional_edges("Database", router)
 
