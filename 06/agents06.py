@@ -1,12 +1,14 @@
 from state06 import State,AgentResponse
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, AIMessage, HumanMessage,RemoveMessage
+from langgraph.types import Command
+from typing import Literal
 from rich import print
 import sqlite3
 
 
 
-llm = ChatGroq(model="llama-3.3-70b-specdec", temperature=0)
+llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
 cursor = sqlite3.connect("database.sqlite").cursor()
 def get_database_info():
@@ -19,7 +21,7 @@ def get_database_info():
             temp.append(column)
         database.append({f"{table_name}":temp})
     return database
-
+print(get_database_info())
 analyzer_prompt=f"""\
 ## Role: Data Analyst in a Research Team  
 
@@ -81,30 +83,62 @@ Your goal is to provide **constructive feedback** to the Data Analyst. Use your 
 ### When ever calling the Database Tool, Give only the SQL query.
 """
 
-def Analyzer_agent(state: State) -> State:
+def Analyzer_agent(state: State) -> Command[Literal[ "Critic", "Database","END"]]:
     print("---Analyzer_agent---")
     state["criticized"] = state.get("criticized",0)
     state["pre"] = state.get("pre","Analyst")
-    state["next"] = state.get("next","END")
     if state["criticized"]<2:
-        response = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=analyzer_prompt)]+state["messages"])
+        response  = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=analyzer_prompt)]+state["messages"])
     else:
         response = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=critic_prompt)]+state["messages"]+[HumanMessage(content="Finalize and conclude the process and deliver the report.")])
     print("Analyzer_agent response:", response)
     if state["pre"]=="Database":
-      return {"messages": [AIMessage(content=response.message),RemoveMessage(state["messages"][-1].id)], "next": response.next,"pre":"Analyst","criticized":state["criticized"]}
+      return Command(
+          update={
+              "messages": [AIMessage(content=response.message),RemoveMessage(state["messages"][-1].id)],
+              "pre": "Analyst"
+          },
+          goto=response.next
+      )
     elif state["pre"]=="Critic":
-      return {"messages": [AIMessage(content=response.message)], "next": response.next,"pre":"Analyst","criticized":state["criticized"]+1}
-    return {"messages": [AIMessage(content=response.message)], "next": response.next,"pre":"Analyst","criticized":state["criticized"]}
+      return Command(
+          update={
+        "messages": [AIMessage(content=response.message)],
+        "pre": "Analyst",
+        "criticized":state["criticized"]+1
+        }
+        goto=response.next
+      )
+    return Command(
+        update={
+            "messages": [AIMessage(content=response.message)],
+            "pre": "Analyst"
+        },
+        goto=response.next
+    )
 
-def Critic_agent(state: State) -> State:
+def Critic_agent(state: State) -> Command[Literal["Analyst", "Database"]]:
     print("---Critic_agent---")
     response = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=critic_prompt)]+state["messages"])
     print("Critic_agent response:", response)
     if state["pre"]=="Database":
-      return {"messages": [AIMessage(content=response.message),RemoveMessage(state["messages"][-1].id)], "next": response.next,"pre":"Critic","criticized":state["criticized"]}
-    return {"messages": [AIMessage(content=response.message)], "next": response.next,"pre":"Critic","criticized":state["criticized"]}
-def Database_agent(state: State) -> State:
+      return Command(
+          update={
+              "messages": [AIMessage(content=response.message),RemoveMessage(state["messages"][-1].id)],
+              "pre": "Critic"
+          },
+          goto=response.next
+      )
+    return Command(
+        update={
+            "messages": [AIMessage(content=response.message)],
+            "pre": "Critic"
+        },
+        goto=response.next
+    )
+
+
+def Database_agent(state: State) -> Command[Literal["Analyst", "Critic"]]:
     print("---Database_agent---")
     response =[]
     try:
@@ -112,4 +146,10 @@ def Database_agent(state: State) -> State:
             response.append(str(message))
     except sqlite3.Error as e:
         response.append(f"Database error: {e}")
-    return {"messages": [AIMessage(content=str(response))], "next": state["pre"],"pre":"Database","criticized":state["criticized"]}
+    return Command(
+        update={
+            "messages": [AIMessage(content=str(response))],
+            "pre": "Database"
+        },
+        goto=state["pre"]
+    )
