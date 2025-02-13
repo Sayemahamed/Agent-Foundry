@@ -1,8 +1,9 @@
 from typing import Literal
 from langgraph.graph import StateGraph, START, END
-from langgraph.prebuilt import ToolNode,tools_condition
-from state import State
+from langgraph.prebuilt import ToolNode, tools_condition
+from state07 import State
 from agents07 import CEO_agent, Critic_agent, Planner_agent
+
 
 def router(state: State) -> Literal["CEO", "Critic", "Planner"]:
     print(state)
@@ -14,6 +15,7 @@ def router(state: State) -> Literal["CEO", "Critic", "Planner"]:
         return "Planner"
     else:
         return "CEO"
+
 
 # Build the state graph with defined nodes and transitions
 builder = StateGraph(State)
@@ -27,4 +29,4 @@ builder.add_conditional_edges("Critic", router)
 builder.add_edge("tools", "Internet")
 builder.add_edge("CEO", END)
 
-graph = builder.compile(interrupt_before=["tools","CEO","Internet","Planner"])
+graph = builder.compile(interrupt_before=["tools", "CEO", "Internet", "Planner"])

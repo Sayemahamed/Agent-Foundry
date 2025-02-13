@@ -1,16 +1,18 @@
 from langchain_groq import ChatGroq
-from state import State, AgentOutput
+from state07 import State, AgentOutput
 from langchain_core.messages import SystemMessage, AIMessage
-
+from rich import print
 # Initialize the LLM with the desired model and temperature
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
+llm = llm.with_structured_output(schema=AgentOutput)
 
+print(llm.invoke([SystemMessage(content="Hello")]))
 def CEO_agent(state: State) -> State:
     """
     CEO Agent: Coordinates the research team, delegates tasks, and synthesizes inputs.
     """
     print("---CEO_agent---")
-    response = llm.with_structured_output(schema=AgentOutput).invoke(
+    response = llm.invoke(
         [
             SystemMessage(
                 content="""\
@@ -30,17 +32,19 @@ Collaborate with your team members to conduct thorough research on the given top
 Leverage your team’s strengths to produce well-organized and insightful research on the provided topic.
 """
             )
-        ] + state["messages"]
+        ]
+        + state["messages"]
     )
     print("CEO_agent response:", response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
+
 
 def Planner_agent(state: State) -> State:
     """
     Planner Agent: Designs a research plan, outlines steps, and allocates tasks.
     """
     print("---Planner_agent---")
-    response = llm.with_structured_output(schema=AgentOutput).invoke(
+    response = llm.invoke(
         [
             SystemMessage(
                 content="""\
@@ -59,17 +63,19 @@ Design a clear and efficient research plan for the given topic.
 Provide a detailed plan to ensure comprehensive coverage of the topic.
 """
             )
-        ] + state["messages"]
+        ]
+        + state["messages"]
     )
     print("Planner_agent response:", response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
+
 
 def Critic_agent(state: State) -> State:
     """
     Critic Agent: Reviews the research report and provides feedback.
     """
     print("---Critic_agent---")
-    response = llm.with_structured_output(schema=AgentOutput).invoke(
+    response = llm.invoke(
         [
             SystemMessage(
                 content="""\
@@ -88,8 +94,9 @@ Review the research report and provide constructive feedback.
 
 Provide constructive feedback to improve the research report.
 """
-            )    
-        ] + state["messages"]
+            )
+        ]
+        + state["messages"]
     )
     print("Critic_agent response:", response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}

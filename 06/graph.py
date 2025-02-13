@@ -10,4 +10,4 @@ builder.add_node("Analyst", Analyzer_agent)
 builder.add_edge(START, "Analyst")
 builder.add_edge("Analyst", END)
 
-graph = builder.compile(interrupt_before=["Critic","Database"])
+graph = builder.compile(interrupt_before=["Critic", "Database"])

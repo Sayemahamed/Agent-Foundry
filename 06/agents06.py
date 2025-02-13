@@ -1,28 +1,38 @@
-from state06 import State,AgentResponse
+from state06 import State, AgentResponse
 from langchain_groq import ChatGroq
-from langchain_core.messages import SystemMessage, AIMessage, HumanMessage,RemoveMessage
+from langchain_core.messages import (
+    SystemMessage,
+    AIMessage,
+    HumanMessage,
+    RemoveMessage,
+)
 from langgraph.types import Command
 from typing import Literal
 from rich import print
 import sqlite3
 
 
-
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
 cursor = sqlite3.connect("database.sqlite").cursor()
+
+
 def get_database_info():
-    database=[]
-    tables = cursor.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+    database = []
+    tables = cursor.execute(
+        "SELECT name FROM sqlite_master WHERE type='table';"
+    ).fetchall()
     for row in tables:
         table_name = row[0]
-        temp=[]
+        temp = []
         for column in cursor.execute(f"PRAGMA table_info({table_name})"):
             temp.append(column)
-        database.append({f"{table_name}":temp})
+        database.append({f"{table_name}": temp})
     return database
+
+
 print(get_database_info())
-analyzer_prompt=f"""\
+analyzer_prompt = f"""\
 ## Role: Data Analyst in a Research Team  
 
 You are a Data Analyst working within a Research Team that consists of a **Researcher, a Critic, and a Database Tool**.  
@@ -55,7 +65,7 @@ Your goal is to provide clear, concise, and insightful reports based on the avai
 
 ### When ever calling the Database Tool, Give only the SQL query.
 """
-critic_prompt=f"""\
+critic_prompt = f"""\
 ## Role: Critic in a Research Team  
 
 You are a Critic working within a Research Team that consists of a **Researcher, a Critic, and a Database Tool**.  
@@ -83,73 +93,85 @@ Your goal is to provide **constructive feedback** to the Data Analyst. Use your 
 ### When ever calling the Database Tool, Give only the SQL query.
 """
 
-def Analyzer_agent(state: State) -> Command[Literal[ "Critic", "Database","END"]]:
+
+def Analyzer_agent(state: State) -> Command[Literal["Critic", "Database", "__end__"]]:
     print("---Analyzer_agent---")
-    state["criticized"] = state.get("criticized",0)
-    state["pre"] = state.get("pre","Analyst")
-    if state["criticized"]<2:
-        response  = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=analyzer_prompt)]+state["messages"])
+    state["criticized"] = state.get("criticized", 0)
+    state["pre"] = state.get("pre", "Analyst")
+    if state["criticized"] < 2:
+        response = llm.with_structured_output(schema=AgentResponse).invoke(
+            [SystemMessage(content=analyzer_prompt)] + state["messages"]
+        )
     else:
-        response = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=critic_prompt)]+state["messages"]+[HumanMessage(content="Finalize and conclude the process and deliver the report.")])
+        response = llm.with_structured_output(schema=AgentResponse).invoke(
+            [SystemMessage(content=critic_prompt)]
+            + state["messages"]
+            + [
+                HumanMessage(
+                    content="Finalize and conclude the process and deliver the report."
+                )
+            ]
+        )
     print("Analyzer_agent response:", response)
-    if state["pre"]=="Database":
-      return Command(
-          update={
-              "messages": [AIMessage(content=response.message),RemoveMessage(state["messages"][-1].id)],
-              "pre": "Analyst"
-          },
-          goto=response.next
-      )
-    elif state["pre"]=="Critic":
-      return Command(
-          update={
-        "messages": [AIMessage(content=response.message)],
-        "pre": "Analyst",
-        "criticized":state["criticized"]+1
-        }
-        goto=response.next
-      )
+    if state["pre"] == "Database":
+        return Command(
+            update={
+                "messages": [
+                    AIMessage(content=response.message),
+                    RemoveMessage(state["messages"][-1].id),
+                ],
+                "pre": "Analyst",
+            },
+            goto=response.next,
+        )
+    elif state["pre"] == "Critic":
+        return Command(
+            update={
+                "messages": [AIMessage(content=response.message)],
+                "pre": "Analyst",
+                "criticized": state["criticized"] + 1,
+            },
+            goto=response.next if response.next != "END" else "__end__",
+        )
     return Command(
-        update={
-            "messages": [AIMessage(content=response.message)],
-            "pre": "Analyst"
-        },
-        goto=response.next
+        update={"messages": [AIMessage(content=response.message)], "pre": "Analyst"},
+        goto=response.next,
     )
+
 
 def Critic_agent(state: State) -> Command[Literal["Analyst", "Database"]]:
     print("---Critic_agent---")
-    response = llm.with_structured_output(schema=AgentResponse).invoke([SystemMessage(content=critic_prompt)]+state["messages"])
+    response = llm.with_structured_output(schema=AgentResponse).invoke(
+        [SystemMessage(content=critic_prompt)] + state["messages"]
+    )
     print("Critic_agent response:", response)
-    if state["pre"]=="Database":
-      return Command(
-          update={
-              "messages": [AIMessage(content=response.message),RemoveMessage(state["messages"][-1].id)],
-              "pre": "Critic"
-          },
-          goto=response.next
-      )
+    if state["pre"] == "Database":
+        return Command(
+            update={
+                "messages": [
+                    AIMessage(content=response.message),
+                    RemoveMessage(state["messages"][-1].id),
+                ],
+                "pre": "Critic",
+            },
+            goto=response.next,
+        )
     return Command(
-        update={
-            "messages": [AIMessage(content=response.message)],
-            "pre": "Critic"
-        },
-        goto=response.next
+        update={"messages": [AIMessage(content=response.message)], "pre": "Critic"},
+        goto=response.next,
     )
 
 
 def Database_agent(state: State) -> Command[Literal["Analyst", "Critic"]]:
     print("---Database_agent---")
-    response =[]
+    cursor: sqlite3.Cursor = sqlite3.connect("database.sqlite").cursor()
+    response = []
     try:
         for message in cursor.execute(str(state["messages"][-1].content)).fetchall():
             response.append(str(message))
     except sqlite3.Error as e:
         response.append(f"Database error: {e}")
     return Command(
-        update={
-            "messages": [AIMessage(content=str(response))],
-            "pre": "Database"
-        },
-        goto=state["pre"]
+        update={"messages": [AIMessage(content=str(response))], "pre": "Database"},
+        goto=state["pre"],
     )

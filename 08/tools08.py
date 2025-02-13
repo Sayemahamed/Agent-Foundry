@@ -1,0 +1,47 @@
+from langchain_community.tools import TavilySearchResults
+from langchain_community.document_loaders.firecrawl import FireCrawlLoader
+import psycopg
+
+
+conn = psycopg.connect(
+    dbname="postgres",
+    user="postgres",
+    password="postgres",
+    host="localhost",
+    port="5432"
+)
+
+def get_listed_job_description(job_title):
+    search = TavilySearchResults(
+    max_results=5,
+    search_depth="advanced",
+    include_answer=True,
+    include_raw_content=False,
+    include_images=False,
+    
+    )
+# Establish connection
+try:
+
+    print("Connected to TimescaleDB successfully!")
+
+    # Create a cursor object
+    cur = conn.cursor()
+    
+    # Example query: Check PostgreSQL version
+    cur.execute("SELECT version();")
+    version = cur.fetchone()
+    print("Database Version:", version)
+    # Show all tables
+    cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public';")
+    tables = cur.fetchall()
+    print("Tables in the database:")
+    for table in tables:
+        print("-", table[0])
+    # Close cursor and connection
+    cur.close()
+    conn.close()
+    print("Connection closed.")
+
+except Exception as e:
+    print("Error:", e)

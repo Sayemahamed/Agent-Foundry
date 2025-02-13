@@ -13,15 +13,16 @@ tavily = TavilySearchResults(
     # Optionally override default name/description or args_schema
 )
 
+
 def tavily_tool(topic: str) -> str:
     """
     Searches the internet using TavilySearchResults for the given topic.
-    
+
     Parameters
     ----------
     topic : str
         The topic to search for.
-    
+
     Returns
     -------
     str
@@ -31,20 +32,20 @@ def tavily_tool(topic: str) -> str:
     rich.print("Tavily Search Results:", result)
     return result
 
-# Configure DuckDuckGo Search Tool
-duck = DuckDuckGoSearchResults(
 
-)
+# Configure DuckDuckGo Search Tool
+duck = DuckDuckGoSearchResults()
+
 
 def duck_tool(topic: str) -> str:
     """
     Searches the internet using DuckDuckGo for the given topic.
-    
+
     Parameters
     ----------
     topic : str
         The topic to search for.
-    
+
     Returns
     -------
     str
@@ -54,15 +55,16 @@ def duck_tool(topic: str) -> str:
     rich.print("DuckDuckGo Search Results:", result)
     return result
 
+
 def wikipedia_tool(topic: str) -> str:
     """
     Retrieves a summary for the given topic from Wikipedia.
-    
+
     Parameters
     ----------
     topic : str
         The topic to search on Wikipedia.
-    
+
     Returns
     -------
     str
@@ -76,6 +78,7 @@ def wikipedia_tool(topic: str) -> str:
         error_message = f"Error retrieving Wikipedia summary: {e}"
         print(error_message)
         return error_message
+
 
 # Example usage:
 if __name__ == "__main__":
