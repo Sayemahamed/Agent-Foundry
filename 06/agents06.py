@@ -32,7 +32,7 @@ def get_database_info():
 
 
 print(get_database_info())
-analyzer_prompt = f"""\
+analyzer_prompt = f"""
 ## Role: Data Analyst in a Research Team  
 
 You are a Data Analyst working within a Research Team that consists of a **Researcher, a Critic, and a Database Tool**.  

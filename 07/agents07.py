@@ -5,8 +5,6 @@ from rich import print
 # Initialize the LLM with the desired model and temperature
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
 llm = llm.with_structured_output(schema=AgentOutput)
-
-print(llm.invoke([SystemMessage(content="Hello")]))
 def CEO_agent(state: State) -> State:
     """
     CEO Agent: Coordinates the research team, delegates tasks, and synthesizes inputs.
@@ -36,6 +34,7 @@ Leverage your team’s strengths to produce well-organized and insightful resear
         + state["messages"]
     )
     print("CEO_agent response:", response)
+    response=AgentOutput.model_validate(response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
 
 
@@ -67,6 +66,7 @@ Provide a detailed plan to ensure comprehensive coverage of the topic.
         + state["messages"]
     )
     print("Planner_agent response:", response)
+    response=AgentOutput.model_validate(response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}
 
 
@@ -99,4 +99,5 @@ Provide constructive feedback to improve the research report.
         + state["messages"]
     )
     print("Critic_agent response:", response)
+    response=AgentOutput.model_validate(response)
     return {"messages": [AIMessage(content=response.message)], "next": response.next}

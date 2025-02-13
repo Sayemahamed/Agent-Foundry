@@ -6,7 +6,8 @@ from rich import print
 from langchain_openai import ChatOpenAI
 
 
-llm = ChatOpenAI(model="gpt-4o-mini").with_structured_output(schema=AgentOutput)
+llm = ChatOpenAI(model="gpt-4o-mini")
+
 coach_prompt:str="""
 Coach
 """
