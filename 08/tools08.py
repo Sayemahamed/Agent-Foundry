@@ -1,6 +1,7 @@
 from langchain_community.tools import TavilySearchResults
 from langchain_community.document_loaders.firecrawl import FireCrawlLoader
 import psycopg
+from rich import print
 
 
 conn = psycopg.connect(
@@ -16,10 +17,12 @@ def get_listed_job_description(job_title):
     max_results=5,
     search_depth="advanced",
     include_answer=True,
-    include_raw_content=False,
+    include_raw_content=True,
     include_images=False,
-    
     )
+    return search.invoke({"query": job_title})
+temp=get_listed_job_description('machine learning tutorial filetype:pdf')
+print(temp)
 # Establish connection
 try:
 
