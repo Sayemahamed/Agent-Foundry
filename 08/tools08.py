@@ -2,16 +2,16 @@ from langchain_community.tools import TavilySearchResults
 from langchain_community.document_loaders.firecrawl import FireCrawlLoader
 import psycopg
 from rich import print
+from sqlalchemy import Engine
+from sqlmodel import SQLModel,create_engine,Session,Field
+engine: Engine = create_engine("postgresql+psycopg://postgres:postgres@localhost:5432/postgres")
 
-
-conn = psycopg.connect(
-    dbname="postgres",
-    user="postgres",
-    password="postgres",
-    host="localhost",
-    port="5432",
-)
-
+with Session(engine) as session:
+    result = session.connection().exec_driver_sql(
+        "SELECT table_name FROM information_schema.tables WHERE table_schema='public'"
+    )
+    for row in result:
+        print(row[0])
 
 def get_listed_job_description(job_title):
     search = TavilySearchResults(
