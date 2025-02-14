@@ -10,4 +10,4 @@ class AgentOutput(BaseModel):
 
 class State(MessagesState):
     criticizes: int
-    pre:Literal["User", "Job", "Critic", "Industry"]
+    pre: Literal["User", "Job", "Critic", "Industry"]

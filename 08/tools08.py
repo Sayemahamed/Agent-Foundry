@@ -9,34 +9,38 @@ conn = psycopg.connect(
     user="postgres",
     password="postgres",
     host="localhost",
-    port="5432"
+    port="5432",
 )
+
 
 def get_listed_job_description(job_title):
     search = TavilySearchResults(
-    max_results=5,
-    search_depth="advanced",
-    include_answer=True,
-    include_raw_content=True,
-    include_images=False,
+        max_results=5,
+        search_depth="advanced",
+        include_answer=True,
+        include_raw_content=True,
+        include_images=False,
     )
     return search.invoke({"query": job_title})
-temp=get_listed_job_description('machine learning tutorial filetype:pdf')
+
+
+temp = get_listed_job_description("machine learning tutorial filetype:pdf")
 print(temp)
 # Establish connection
 try:
-
     print("Connected to TimescaleDB successfully!")
 
     # Create a cursor object
     cur = conn.cursor()
-    
+
     # Example query: Check PostgreSQL version
     cur.execute("SELECT version();")
     version = cur.fetchone()
     print("Database Version:", version)
     # Show all tables
-    cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public';")
+    cur.execute(
+        "SELECT table_name FROM information_schema.tables WHERE table_schema='public';"
+    )
     tables = cur.fetchall()
     print("Tables in the database:")
     for table in tables:
