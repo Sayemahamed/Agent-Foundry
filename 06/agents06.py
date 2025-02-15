@@ -1,5 +1,3 @@
-from re import A
-
 from langchain_core.messages.base import BaseMessage
 from state06 import State, AgentResponse
 from langchain_core.messages import (
@@ -56,21 +54,14 @@ You are a **Data Analyst** working within a Research Team that includes a **Crit
   - **Critic:** Submit your report for review to receive feedback and suggestions.
 - **Iterate and Improve:** Refine your analysis and final report by incorporating the Critic’s feedback.
 
-### Workflow Example:
-1. **Retrieve Schema Information:**  
-   - Run SQL Query:  
-     ```sql
-     PRAGMA table_info('table_name');
-     ```  
-   **Next →** Database Tool
-2. **Draft the Report:**  
-   - Compile your analysis based on the retrieved data.  
-   **Next →** Critic
-3. **Finalize the Report:**  
-   - Update your report with the Critic’s suggestions and prepare the final version.  
-   **Next →** END
+### Examples:
 
-🔹 **Important Note:**  
+    {{"message": "PRAGMA table_info('table_name');", "next": "Database"}},
+    {{"message": "SELECT * FROM table_name;", "next": "Database"}},
+    {{"message":"Your report", "next": "Critic"}},
+    {{"message": "Finalize and conclude the process and deliver the report.", "next": "END"}}
+
+    **Important Note:**  
 When invoking the Database Tool, provide **only the SQL query** without any additional instructions.
 """
 )
@@ -94,21 +85,23 @@ Your detailed, constructive critique is essential to enhance the quality of the 
 def Analyzer_agent(state: State) -> Command[Literal["Critic", "Database", "__end__"]]:
     print("---Analyzer_agent---")
     state["criticized"] = state.get("criticized", 0)
+    state["pre"]= state.get("pre", "Critic")
     if state["criticized"] < 2:
-        response: AgentResponse =AgentResponse.model_validate( llm.invoke(
+        response = llm.invoke(
             [SystemMessage(content=analyzer_prompt)] + state["messages"]
-        ))
+        )
     else:
-        response: AgentResponse =AgentResponse.model_validate( llm.invoke(
-            [SystemMessage(content=critic_prompt)]
+        response= llm.invoke(
+            [SystemMessage(content=analyzer_prompt)]
             + state["messages"]
             + [
                 HumanMessage(
                     content="Finalize and conclude the process and deliver the report."
                 )
             ]
-        ))
+        )
     print("Analyzer_agent response:", response)
+    response = parser.parse(text=str(response.content))
     if state["pre"] == "Database":
         return Command(
             update={
@@ -127,12 +120,13 @@ def Analyzer_agent(state: State) -> Command[Literal["Critic", "Database", "__end
 
 def Critic_agent(state: State) -> Command[Literal["Analyst"]]:
     print("---Critic_agent---")
-    response: BaseMessage = llm.invoke(
+    response = llm.invoke(
         [SystemMessage(content=critic_prompt)] + state["messages"]
     )
     print("Critic_agent response:", response)
+    response = parser.parse(text=str(response.content))
     return Command(
-        update={"messages": [AIMessage(content=response.content)], "pre": "Critic"},
+        update={"messages": [AIMessage(content=response.message)], "pre": "Critic"},
         goto="Analyst",
     )
 
