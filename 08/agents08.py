@@ -1,6 +1,6 @@
 from langgraph.types import Command, interrupt
 from typing import Literal
-from langchain_core.messages import HumanMessage, AIMessage,SystemMessage
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from state08 import State, AgentOutput
 from rich import print
 from langchain_core.prompts import PromptTemplate
@@ -13,25 +13,23 @@ llm = ChatOpenAI(model="gpt-4o-mini")
 parser = PydanticOutputParser(pydantic_object=AgentOutput)
 
 coach_agent_prompt = PromptTemplate(
-    template="""
-    You are an AI agent.
+    template=""" You are an AI agent.
 
-    Generate structured JSON response:\n\n{format_instructions}
+Generate structured response:\n\n{format_instructions}
     """,
     input_variables=[],
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
 
 critic_agent_prompt = PromptTemplate(
-    template="""
-    You are an AI agent.
+    template=""" You are an AI agent.
 
-    Generate structured JSON response:\n\n{format_instructions}
+Generate structured response:\n\n{format_instructions}
     """,
     input_variables=[],
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
-coach_agent_prompt.format()
+print(coach_agent_prompt.format())
 
 
 def User_interface(state: State) -> Command[Literal["Coach"]]:
@@ -47,16 +45,22 @@ def Coach_agent(
 ) -> Command[Literal["User", "Job", "Critic", "Industry", "END"]]:
     print("---Coach_agent---")
     if state["criticizes"] < 2:
-        response = llm.invoke([SystemMessage(content=coach_agent_prompt.format())] + state["messages"])
+        response: AgentOutput = AgentOutput.model_validate(
+            llm.invoke(
+                [SystemMessage(content=coach_agent_prompt.format())] + state["messages"]
+            )
+        )
     else:
-        response = llm.invoke(
-            [SystemMessage(content=coach_prompt)]
-            + state["messages"]
-            + [
-                HumanMessage(
-                    content="Finalize and conclude the process and deliver the report."
-                )
-            ]
+        response: AgentOutput = AgentOutput.model_validate(
+            llm.invoke(
+                [SystemMessage(content=critic_agent_prompt.format())]
+                + state["messages"]
+                + [
+                    HumanMessage(
+                        content="Finalize and conclude the process and deliver the report."
+                    )
+                ]
+            )
         )
     return Command(
         update={"messages": [AIMessage(content=response.message)], "pre": "Coach"},
@@ -64,11 +68,11 @@ def Coach_agent(
     )
 
 
-def Critic_agent(state: State) -> Command[Literal["Job", "Coach", "Industry"]]:
+def Critic_agent(state: State) -> Command[Literal["Coach"]]:
     print("---Critic_agent---")
-    response = llm.with_structured_output(schema=AgentOutput).invoke(
-        [SystemMessage(content=critic_prompt)] + state["messages"]
-    )
+    response: AgentOutput =AgentOutput.model_validate( llm.invoke(
+        [SystemMessage(content=critic_agent_prompt.format())] + state["messages"]
+    ))
     return Command(
         update={
             "messages": [AIMessage(content=response.message)],

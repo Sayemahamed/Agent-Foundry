@@ -22,7 +22,7 @@ prompt
 
 llm = ChatOpenAI(model="gpt-4o-mini")
 
-temp =prompt.format(input="What is the best next step after analyzing user data?")
+temp = prompt.format(input="What is the best next step after analyzing user data?")
 print(temp)
 
 response = llm.invoke(
