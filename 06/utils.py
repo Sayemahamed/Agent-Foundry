@@ -7,7 +7,7 @@ from rich import print
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 def invoke_llm(prompt: list[BaseMessage],count:int=0) -> AgentResponse:
-    if count > 5:
+    if count > 2:
         raise Exception("Too many attempts to parse response")
     response: AIMessage = llm.invoke(prompt)  # type: ignore
     try:
@@ -20,7 +20,7 @@ def invoke_llm(prompt: list[BaseMessage],count:int=0) -> AgentResponse:
         print(validation_schema)
         return invoke_llm([
             AIMessage(content=response.content),
-            HumanMessage(content=f"Provide a valid JSON response that matches this schema:\n{validation_schema}")
+            HumanMessage(content=f"Give the previous response as valid JSON response that matches this schema:\n{validation_schema} Give Only JSON , no other text")
         ],count=count+1)
 
 if __name__ == "__main__":
