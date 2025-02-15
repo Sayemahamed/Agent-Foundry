@@ -20,7 +20,7 @@ def invoke_llm(prompt: list[BaseMessage],count:int=0) -> AgentResponse:
         print(validation_schema)
         return invoke_llm([
             AIMessage(content=response.content),
-            HumanMessage(content=f"Give the previous response as valid JSON response that matches this schema:\n{validation_schema} Give Only JSON , no other text")
+            HumanMessage(content=f"Give the previous response as valid JSON response that matches this schema:\n{validation_schema} Give Only JSON , no other text, not even in markdown")
         ],count=count+1)
 
 if __name__ == "__main__":
