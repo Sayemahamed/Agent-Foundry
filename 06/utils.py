@@ -10,4 +10,4 @@ def invoke_llm(prompt: list[BaseMessage]) -> AgentResponse:
     try:
         return AgentResponse.model_validate_json(str(response.content))
     except:
-        return invoke_llm([HumanMessage(content="Give valid JSON response"),AIMessage(content=str(response.content))])
+        return invoke_llm([AIMessage(content=str(response.content)),HumanMessage(content="Valid JSON response :"+str(AgentResponse.model_json_schema()))])
