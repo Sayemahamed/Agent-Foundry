@@ -12,8 +12,14 @@
     "Graph_with_customReducer":"./02/graph.py:graph",
     "Calculator_agent": "./03/graph.py:graph",
     "Summary_keeping_agent": "./04/graph.py:graph",
+<<<<<<< HEAD
     "Business_analysis_agent": "./06/graph.py:graph",
     "Time_traveler": "./08/graph.py:graph"
+=======
+    "DB_agent": "./05/graph.py:graph",
+    "Business_analysis_agent": "./06/graph.py:graph",
+    "ChatGPT_agent": "./07/graph.py:graph"
+>>>>>>> 68dfad03e6cd1308d67c7a37f512d1a9992d9b8d
   },
   "env": ".env"
 }
