@@ -4,9 +4,7 @@
     "./02/",
     "./03/",
     "./04/",
-    "./05/",
     "./06/",
-    "./07/",
     "./08/"
 ],
   "graphs": {
@@ -14,7 +12,6 @@
     "Graph_with_customReducer":"./02/graph.py:graph",
     "Calculator_agent": "./03/graph.py:graph",
     "Summary_keeping_agent": "./04/graph.py:graph",
-    "DB_agent": "./05/graph.py:graph",
     "Business_analysis_agent": "./06/graph.py:graph"
   },
   "env": ".env"

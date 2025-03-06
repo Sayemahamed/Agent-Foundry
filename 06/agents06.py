@@ -12,7 +12,7 @@ import sqlite3
 from utils import invoke_llm, get_database_info
 
 
-analyst_prompt: str=f"""
+analyst_prompt: str = f"""
 ## Role: Data Analyst in a Research Team
 
 You are a **Data Analyst** working within a Research Team that includes a **Critic** and a **Database Tool**. Your task is to analyze data from the database, generate insightful reports, and iteratively improve your analysis based on feedback from the Critic.
@@ -66,9 +66,11 @@ Your detailed, constructive critique is essential to enhance the quality of the 
 def Analyzer_agent(state: State) -> Command[Literal["Critic", "Database", "__end__"]]:
     print("---Analyzer_agent---")
     state["criticized"] = state.get("criticized", 0)
-    state["pre"]= state.get("pre", "Analyst")
+    state["pre"] = state.get("pre", "Analyst")
     if state["criticized"] < 2:
-        response: AgentResponse = invoke_llm([SystemMessage(content=analyst_prompt)]+state["messages"])
+        response: AgentResponse = invoke_llm(
+            [SystemMessage(content=analyst_prompt)] + state["messages"]
+        )
     else:
         response: AgentResponse = invoke_llm(
             [SystemMessage(content=analyst_prompt)]
@@ -86,21 +88,27 @@ def Analyzer_agent(state: State) -> Command[Literal["Critic", "Database", "__end
                     AIMessage(content=response.Message),
                     RemoveMessage(id=str(state["messages"][-1].id)),
                 ],
-                "criticized": state["criticized"] + 1 if state["pre"] == "Critic" else 0,
+                "criticized": state["criticized"] + 1
+                if state["pre"] == "Critic"
+                else 0,
                 "pre": "Analyst",
             },
             goto=response.Next,
         )
     return Command(
-        update={"messages": [AIMessage(content=response.Message)],"criticized": state["criticized"] + 1 if state["pre"] == "Critic" else 0, state["pre"]: "Analyst"},
+        update={
+            "messages": [AIMessage(content=response.Message)],
+            "criticized": state["criticized"] + 1 if state["pre"] == "Critic" else 0,
+            state["pre"]: "Analyst",
+        },
         goto=response.Next if response.Next != "END" else "__end__",
     )
 
 
 def Critic_agent(state: State) -> Command[Literal["Analyst"]]:
-    print("-*-"*80)
+    print("-*-" * 80)
     print("---Critic_agent---")
-    print("-*-"*80)
+    print("-*-" * 80)
     response: AgentResponse = invoke_llm(
         [SystemMessage(content=critic_prompt)] + state["messages"]
     )
@@ -111,9 +119,9 @@ def Critic_agent(state: State) -> Command[Literal["Analyst"]]:
 
 
 def Database(state: State) -> Command[Literal["Analyst"]]:
-    print("-*-"*80)
+    print("-*-" * 80)
     print("---Database_agent---")
-    print("-*-"*80)
+    print("-*-" * 80)
     cursor: sqlite3.Cursor = sqlite3.connect("database.sqlite").cursor()
     response = []
     try:

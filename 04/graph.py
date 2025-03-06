@@ -1,11 +1,10 @@
 from typing import Literal, TypedDict, Annotated, Optional
 from langgraph.graph import START, END, StateGraph
-from langchain_ollama import ChatOllama
-from langgraph.graph.message import BaseMessage, add_messages, RemoveMessage
-from langchain_core.messages import HumanMessage
-from langgraph.checkpoint.memory import MemorySaver
-from langchain_groq import ChatGroq
+from langchain_core.messages import HumanMessage, BaseMessage
+from langgraph.checkpoint.postgres import PostgresSaver
+from langgraph.graph.message import add_messages
 from langgraph.graph.state import CompiledStateGraph
+from langchain_openai import ChatOpenAI
 
 
 class State(TypedDict):
@@ -13,12 +12,7 @@ class State(TypedDict):
     summary: Optional[str]
 
 
-# agent = ChatOllama(
-#     model="qwen2.5:0.5b",
-#     # model="granite3.1-moe",
-#     temperature=0.9,
-# )
-agent = ChatGroq(model="llama3-8b-8192", temperature=0.7)
+agent = ChatOpenAI(name="gpt-4o-mini", temperature=0)
 
 
 def decider(state: State) -> Literal["agent", "summarize"]:
@@ -98,10 +92,12 @@ builder.add_node(node="summarize", action=summarize)
 builder.add_conditional_edges(source=START, path=decider)
 builder.add_edge(start_key="summarize", end_key="agent")
 builder.add_edge(start_key="agent", end_key=END)
-
-graph: CompiledStateGraph = builder.compile(
-    interrupt_before=["summarize"], checkpointer=MemorySaver()
-)
+with PostgresSaver.from_conn_string(
+    "postgresql://postgres:postgres@localhost:5432/postgres"
+) as memory:
+    graph: CompiledStateGraph = builder.compile(
+        interrupt_before=["summarize"], checkpointer=memory
+    )
 
 # graph.invoke(
 #     {"messages": [HumanMessage(content="Hello, I am Sayem")]},

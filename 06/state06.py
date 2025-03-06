@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class AgentResponse(BaseModel):
     Message: str
-    Next: Literal[ "Critic", "Database", "END"]
+    Next: Literal["Critic", "Database", "END"]
 
 
 class State(MessagesState):

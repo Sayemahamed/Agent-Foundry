@@ -1,10 +1,10 @@
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from state07 import State, AgentOutput
 from langchain_core.messages import SystemMessage, AIMessage
 from rich import print
 
 # Initialize the LLM with the desired model and temperature
-llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.7)
+llm = ChatOpenAI(name="gpt-4o-mini", temperature=0)
 llm = llm.with_structured_output(schema=AgentOutput)
 
 
