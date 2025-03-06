@@ -12,7 +12,8 @@
     "Graph_with_customReducer":"./02/graph.py:graph",
     "Calculator_agent": "./03/graph.py:graph",
     "Summary_keeping_agent": "./04/graph.py:graph",
-    "Business_analysis_agent": "./06/graph.py:graph"
+    "Business_analysis_agent": "./06/graph.py:graph",
+    "Time_traveler": "./08/graph.py:graph"
   },
   "env": ".env"
 }
