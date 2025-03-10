@@ -5,8 +5,6 @@ from state04 import State
 from Nodes04 import call_agent, summarize, decider
 
 
-
-
 builder = StateGraph(state_schema=State)
 
 builder.add_node(node="agent", action=call_agent)

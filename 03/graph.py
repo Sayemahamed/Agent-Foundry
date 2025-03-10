@@ -7,9 +7,6 @@ from langgraph.checkpoint.postgres import PostgresSaver
 from Nodes03 import call_agent
 
 
-
-
-
 builder = StateGraph(State)
 
 builder.add_node("agent", call_agent)

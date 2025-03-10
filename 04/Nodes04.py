@@ -4,7 +4,6 @@ from typing import Literal
 from langchain_core.messages import HumanMessage
 
 
-
 agent = ChatOpenAI(name="gpt-4o-mini", temperature=0)
 
 

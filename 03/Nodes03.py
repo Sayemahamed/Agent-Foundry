@@ -7,6 +7,7 @@ agent = agent.bind_tools(
     tools=[multiply, divide, add, subtract, power, sqrt, factorial]
 )
 
+
 def call_agent(state: State):
     temp = agent.invoke(state["messages"])
     print(temp)

@@ -1,4 +1,6 @@
 from state02 import State
+
+
 def Node_1(state: State) -> State:
     print("---Node_1---")
     return {"count": [state["count"][-1] + 1]}

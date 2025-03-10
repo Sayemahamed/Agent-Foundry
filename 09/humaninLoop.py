@@ -20,6 +20,7 @@ def step_3(input_query):
     """Append qux."""
     return f"{input_query} qux"
 
+
 from langgraph.checkpoint.memory import MemorySaver
 
 checkpointer = MemorySaver()
@@ -33,9 +34,14 @@ def graph(input_query):
 
     return result_3
 
-async for chunk in graph.astream(input="foo", config={"configurable": {"thread_id": "1"}}):
+
+async for chunk in graph.astream(
+    input="foo", config={"configurable": {"thread_id": "1"}}
+):
     print(chunk)
 
 
-async for chunk in graph.astream(Command(resume="yo"), config={"configurable": {"thread_id": "1"}}):
+async for chunk in graph.astream(
+    Command(resume="yo"), config={"configurable": {"thread_id": "1"}}
+):
     print(chunk)

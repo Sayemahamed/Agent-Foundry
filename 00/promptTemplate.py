@@ -28,7 +28,7 @@ print(temp)
 response: BaseMessage = llm.invoke(
     prompt.format(input="What is the best next step after analyzing user data?")
 )
-parsed_response : AgentOutput= parser.parse(text=str(response.content))
+parsed_response: AgentOutput = parser.parse(text=str(response.content))
 
 print(parsed_response)
 parsed_response.next_step
