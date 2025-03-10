@@ -1,3 +1,4 @@
+from langchain_core.messages.base import BaseMessage
 from pydantic import BaseModel
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
@@ -18,18 +19,16 @@ prompt = PromptTemplate(
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
 
-prompt
 
 llm = ChatOpenAI(model="gpt-4o-mini")
 
 temp = prompt.format(input="What is the best next step after analyzing user data?")
 print(temp)
 
-response = llm.invoke(
+response: BaseMessage = llm.invoke(
     prompt.format(input="What is the best next step after analyzing user data?")
 )
-response
-parsed_response = parser.parse(text=str(response.content))
+parsed_response : AgentOutput= parser.parse(text=str(response.content))
 
 print(parsed_response)
 parsed_response.next_step

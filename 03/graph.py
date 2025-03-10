@@ -4,18 +4,10 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from tools03 import *
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.postgres import PostgresSaver
+from Nodes03 import call_agent
 
 
-agent = ChatOpenAI(name="gpt-4o-mini", temperature=0)
-agent = agent.bind_tools(
-    tools=[multiply, divide, add, subtract, power, sqrt, factorial]
-)
 
-
-def call_agent(state: State):
-    temp = agent.invoke(state["messages"])
-    print(temp)
-    return {"messages": temp}
 
 
 builder = StateGraph(State)
