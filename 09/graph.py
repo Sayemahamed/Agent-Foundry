@@ -18,5 +18,5 @@ graph = builder.compile(checkpointer=MemorySaver())
 async for chunk in graph.astream(input={"initialS": "1A"}, config={"configurable": {"thread_id": "1"}}):
     print(chunk)
 
-async for chunk in graph.astream(Command(resume="3B"), config={"configurable": {"thread_id": "1"}}):
+async for chunk in graph.astream(Command(resume="1B"), config={"configurable": {"thread_id": "1"}}):
     print(chunk)

@@ -19,3 +19,4 @@ tavily-python
 ruff
 rich
 langchain-openai
+langgraph-swarm
