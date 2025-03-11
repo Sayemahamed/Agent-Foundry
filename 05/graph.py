@@ -16,18 +16,18 @@ builder.add_edge(START, "call")
 #         store = PostgresStore(conn)
 #         store.setup()
 #         # ... rest of your code ...
+graph = builder.compile()
 
-
-with ConnectionPool(conninfo="postgresql://postgres:postgres@localhost:5432/postgres") as pool:
-    with pool.connection() as conn:
-        checkpointer = PostgresSaver(conn)
-        store = PostgresStore(conn)
-        graph = builder.compile(checkpointer=checkpointer, store=store)
-        input_message ={"role": "user", "content": "Hi! Remember: my name is Sayem"}
-        response=graph.invoke({"messages":input_message},RunnableConfig(configurable={"user_id": "Sayem", "thread_id": "1"}))
-        for message in response["messages"]:
-            message.pretty_print()
-        input_message ={"role": "user", "content": "What is my Name?"}
-        response=graph.invoke({"messages":input_message},RunnableConfig(configurable={"user_id": "Sayem", "thread_id": "2"}))
-        for message in response["messages"]:
-            message.pretty_print()
+# with ConnectionPool(conninfo="postgresql://postgres:postgres@localhost:5432/postgres") as pool:
+#     with pool.connection() as conn:
+#         checkpointer = PostgresSaver(conn)
+#         store = PostgresStore(conn)
+#         graph = builder.compile(checkpointer=checkpointer, store=store)
+#         input_message ={"role": "user", "content": "Hi! Remember: my name is Sayem"}
+#         response=graph.invoke({"messages":input_message},RunnableConfig(configurable={"user_id": "Sayem", "thread_id": "1"}))
+#         for message in response["messages"]:
+#             message.pretty_print()
+#         input_message ={"role": "user", "content": "What is my Name?"}
+#         response=graph.invoke({"messages":input_message},RunnableConfig(configurable={"user_id": "Sayem", "thread_id": "2"}))
+#         for message in response["messages"]:
+#             message.pretty_print()

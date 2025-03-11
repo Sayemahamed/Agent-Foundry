@@ -1,35 +1,26 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.runnables import RunnableConfig
+from langgraph.graph import START, END, StateGraph
+from langgraph_swarm.swarm import StateGraph as SwarmStateGraph,
+from langgraph.prebuilt import tools_condition,ToolNode
+from Nodes10 import internet, math
+from tools10 import add,divide,factorial,multiply,power,subtract,sqrt,tavily,to_internet,to_math
+from state10 import State
 
-from langgraph.checkpoint.memory import InMemorySaver
-from langgraph.prebuilt import create_react_agent
-from langgraph_swarm import create_handoff_tool, create_swarm
-from langchain_core.tools import tool
+internet_builder = StateGraph(State)
+internet_builder.add_node("Internet", internet)
+internet_builder.add_node("tools",ToolNode([tavily,to_math]))
+internet_builder.add_edge(START, "Internet")
+internet_builder.add_conditional_edges("Internet", tools_condition)
+internet_builder.add_edge("tools", "Internet")
+internet_builder.add_edge("Internet", END)
 
-model = ChatOpenAI(model="gpt-4o")
-@tool
-def add(a: int, b: int) -> int:
-    """Add two numbers"""
-    return a + b
+internet_graph=internet_builder.compile(interrupt_before=["tools"]) 
 
-alice = create_react_agent(
-    model,
-    [add, create_handoff_tool(agent_name="Bob")],
-    prompt="You are Alice, an addition expert.",
-    name="Alice",
-)
+math_builder = StateGraph(State)
+math_builder.add_node("math", math)
+math_builder.add_node("tools",ToolNode([multiply, divide, add, subtract, power, sqrt, factorial,to_internet]))
+math_builder.add_edge(START, "math")
+math_builder.add_conditional_edges("math", tools_condition)
+math_builder.add_edge("tools", "math")
+math_builder.add_edge("math", END)
 
-bob = create_react_agent(
-    model,
-    [create_handoff_tool(agent_name="Alice", description="Transfer to Alice, she can help with math")],
-    prompt="You are Bob, you speak like a pirate.",
-    name="Bob",
-)
-
-checkpointer = InMemorySaver()
-workflow = create_swarm(
-    [alice, bob],
-    default_active_agent="Alice"
-)
-graph = workflow.compile(checkpointer=checkpointer)
-
+math_graph = math_builder.compile(interrupt_before=["tools"])
