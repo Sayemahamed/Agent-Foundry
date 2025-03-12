@@ -8,8 +8,7 @@
     "./06/",
     "./07/",
     "./08/",
-    "./09/",
-    "./10/"
+    "./09/"
 ],
   "graphs": {
     "BasicGraph": "./01/graph.py:graph",
@@ -18,8 +17,7 @@
     "Summary_keeping_agent": "./04/graph.py:graph",
     "Business_analysis_agent": "./06/graph.py:graph",
     "Time_traveler": "./08/graph.py:graph",
-    "Make_a_choice": "./09/graph.py:graph",
-    "Swarm": "./10/graph.py:graph"
+    "Make_a_choice": "./09/graph.py:graph"
   },
   "env": ".env"
 }
